@@ -54,12 +54,13 @@ class LamaHDataset(Dataset):
 
     def download(self):
         print("Downloading LamaH-CE from Zenodo to", self.raw_dir)
-        total_size = int(urllib.request.urlopen(self.DATA_URL).info().get('Content-Length'))
-        with tqdm(total=total_size, unit="B", unit_scale=True, unit_divisor=1024) as pbar:
+        total_size = int(urllib.request.urlopen(self.DATA_URL).info().get("Content-Length"))
+        with tqdm(total=total_size, unit="B", unit_scale=True, unit_divisor=1024, desc="Downloading") as pbar:
             filename, _ = urllib.request.urlretrieve(self.DATA_URL, reporthook=lambda _, n, __: pbar.update(n))
-        with tarfile.open(filename) as archive:
-            archive.extractall(self.raw_dir, members=list(
-                filter(lambda t: t.name.startswith(tuple(self.raw_file_names)), archive.getmembers())))
+        archive = tarfile.open(filename)
+        for member in tqdm(archive.getmembers(), desc="Extracting"):
+            if member.name.startswith(tuple(self.raw_file_names)):
+                archive.extract(member, self.raw_dir)
 
     def process(self):
         stream_dist = pd.read_csv(f"{self.raw_dir}/{self.raw_file_names[0]}/Stream_dist.csv", sep=";")
