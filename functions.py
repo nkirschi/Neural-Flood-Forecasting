@@ -1,7 +1,6 @@
 import copy
 import numpy as np
 import os
-import poptorch
 import random
 import torch
 import torch.nn as nn
@@ -112,55 +111,42 @@ def load_model_and_dataset(chkpt):
 
 def train_step(model, train_loader, optimizer, device):
     model.train()
-    train_loss = 0
+    train_loss = 0.0
     for batch in tqdm(train_loader, desc="Training"):
-        if device != "ipu":
-            batch = batch.to(device)
-            optimizer.zero_grad()
+        batch = batch.to(device)
+        optimizer.zero_grad()
         out, loss = model(batch.x, batch.edge_index, batch.y)
-        if device != "ipu":
-            loss.backward()
-            optimizer.step()
+        loss.backward()
+        optimizer.step()
         train_loss += loss.item() * batch.num_graphs / len(train_loader.dataset)
     return train_loss
 
 
 def val_step(model, val_loader, device):
     model.eval()
-    val_loss = 0
+    val_loss = 0.0
     with torch.no_grad():
         for batch in tqdm(val_loader, desc="Validating"):
-            if device != "ipu":
-                batch = batch.to(device)
+            batch = batch.to(device)
             out, loss = model(batch.x, batch.edge_index, batch.y)
             val_loss += loss.item() * batch.num_graphs / len(val_loader.dataset)
     return val_loss
 
 
-def train(model, dataset, hparams, save_dir="runs/", on_ipu=False):
+def train(model, dataset, hparams, save_dir="runs/"):
     print(summary(model, depth=2))
 
     holdout_size = hparams["training"]["holdout_size"]
     train_dataset, val_dataset = random_split(dataset, [1 - holdout_size, holdout_size])
-    train_loader = DataLoader(train_dataset, batch_size=hparams["training"]["batch_size"], shuffle=True,
-                              drop_last=on_ipu)
-    val_loader = DataLoader(val_dataset, batch_size=hparams["training"]["batch_size"], shuffle=False, drop_last=on_ipu)
+    train_loader = DataLoader(train_dataset, batch_size=hparams["training"]["batch_size"], shuffle=True)
+    val_loader = DataLoader(val_dataset, batch_size=hparams["training"]["batch_size"], shuffle=False)
 
-    if on_ipu:
-        optimizer = poptorch.optim.Adam(model.parameters(),
-                                        lr=hparams["training"]["learning_rate"],
-                                        weight_decay=hparams["training"]["weight_decay"])
-        model = poptorch.trainingModel(model, optimizer=optimizer)
-        compile_ipu_model(model, train_loader)
-        device = "ipu"
-        print("Training on IPU")
-    else:
-        optimizer = torch.optim.Adam(model.parameters(),
-                                     lr=hparams["training"]["learning_rate"],
-                                     weight_decay=hparams["training"]["weight_decay"])
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        model = model.to(device)
-        print("Training on", device)
+    optimizer = torch.optim.Adam(model.parameters(),
+                                 lr=hparams["training"]["learning_rate"],
+                                 weight_decay=hparams["training"]["weight_decay"])
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = model.to(device)
+    print("Training on", device)
 
     history = {"train_loss": [], "val_loss": [], "model_params": [], "optim_params": []}
 
@@ -177,9 +163,6 @@ def train(model, dataset, hparams, save_dir="runs/", on_ipu=False):
             epoch + 1, hparams['training']['num_epochs'], train_loss, val_loss
         ))
 
-    if on_ipu:
-        model.detachFromDevice()
-
     if not save_dir.endswith("/"):
         save_dir = save_dir + "/"
     os.makedirs(save_dir, exist_ok=True)
@@ -190,32 +173,16 @@ def train(model, dataset, hparams, save_dir="runs/", on_ipu=False):
     return history
 
 
-def compile_ipu_model(model, loader):
-    data = loader.dataset[0]
-    fake_x = data.x.repeat(loader.batch_size, 1)
-    fake_y = data.y.repeat(loader.batch_size, 1)
-    fake_idx = data.edge_index.repeat(1, loader.batch_size)
-    model.compile(fake_x, fake_idx, fake_y)
-
-
-def evaluate_mse_nse(model, dataset, on_ipu=False):
-    if on_ipu:
-        device = "ipu"
-        model = poptorch.inferenceModel(model)
-        model.compile(dataset[0].x, dataset[0].edge_index)
-    else:
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        model = model.to(device)
+def evaluate_mse_nse(model, dataset):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = model.to(device)
     model.eval()
     node_mses = torch.zeros(dataset[0].num_nodes, 1)
     with torch.no_grad():
         for data in tqdm(dataset, desc="Testing"):
-            if device != "ipu":
-                data = data.to(device)
+            data = data.to(device)
             pred = model(data.x, data.edge_index)
             node_mses += mse_loss(pred, data.y, reduction="none") / len(dataset)
-    if on_ipu:
-        model.detachFromDevice()
     if dataset.normalized:
         node_mses *= dataset.std.square()
     nose_nses = 1 - node_mses / dataset.std.square()
@@ -240,27 +207,19 @@ def dirichlet_energy(x, edge_index, edge_weight, normalization=None):
     return 0.5 * torch.trace(torch.mm(x.T, torch.sparse.mm(lap, x)))
 
 
-def evaluate_dirichlet_energy(model, dataset, on_ipu=False):
-    if on_ipu:
-        device = "ipu"
-        model = poptorch.inferenceModel(model)
-        model.compile(dataset[0].x, dataset[0].edge_index, evo_tracking=True)
-    else:
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        model = model.to(device)
+def evaluate_dirichlet_energy(model, dataset):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = model.to(device)
     model.eval()
     dirichlet_stats = []
     with torch.no_grad():
         edge_weights = model.edge_weights.detach().nan_to_num()
         for data in tqdm(dataset, desc="Testing"):
-            if device != "ipu":
-                data = data.to(device)
+            data = data.to(device)
             _, evo = model(data.x, data.edge_index, evo_tracking=True)
             dir_energies = torch.tensor([dirichlet_energy(h, data.edge_index, edge_weights) for h in evo])
             dirichlet_stats.append(dir_energies)
     dirichlet_stats = torch.stack(dirichlet_stats)
-    if on_ipu:
-        model.detachFromDevice()
     return dirichlet_stats
 
 
