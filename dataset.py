@@ -16,7 +16,7 @@ class LamaHDataset(Dataset):
 
         self.window_size_hrs = window_size
         self.stride_length_hrs = stride_length
-        self.lead_time_hrs = lead_time
+        self.lead_time = lead_time
         self.normalized = normalized
         self.years = years
         self.year_sizes = [(24 * (365 + int(year % 4 == 0)) - (window_size + lead_time)) // stride_length + 1
@@ -128,7 +128,7 @@ class LamaHDataset(Dataset):
     def get(self, idx):
         year_tensor, offset = self._decode_index(idx)
         x = year_tensor[:, offset:(offset + self.window_size_hrs)]
-        y = year_tensor[:, offset + self.window_size_hrs + (self.lead_time_hrs - 1)]
+        y = year_tensor[:, offset + self.window_size_hrs + (self.lead_time - 1)]
         return Data(x=x, y=y.unsqueeze(-1), edge_index=self.edge_index, edge_attr=self.edge_attr)
 
     def normalize(self, x):
@@ -142,4 +142,4 @@ class LamaHDataset(Dataset):
             idx -= size
             if idx < 0:
                 return self.year_tensors[i], self.stride_length_hrs * (idx + size)
-        raise AssertionError("This cannot happen!")
+        raise AssertionError("Corrupt internal state. This should never happen!")
