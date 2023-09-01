@@ -133,7 +133,7 @@ def val_step(model, val_loader, device):
     return val_loss
 
 
-def train(model, dataset, hparams, save_dir="runs/"):
+def train(model, dataset, hparams, early_stopping_patience=5):
     print(summary(model, depth=2))
 
     holdout_size = hparams["training"]["holdout_size"]
@@ -150,6 +150,8 @@ def train(model, dataset, hparams, save_dir="runs/"):
 
     history = {"train_loss": [], "val_loss": [], "model_params": [], "optim_params": []}
 
+    min_val_loss = float("inf")
+    impatience_counter = 0
     for epoch in range(hparams["training"]["num_epochs"]):
         train_loss = train_step(model, train_loader, optimizer, device)
         val_loss = val_step(model, val_loader, device)
@@ -162,15 +164,25 @@ def train(model, dataset, hparams, save_dir="runs/"):
         print("[Epoch {0}/{1}] Train: {2:.4f} | Val {3:.4f}".format(
             epoch + 1, hparams['training']['num_epochs'], train_loss, val_loss
         ))
+        
+        if val_loss < min_val_loss:
+            min_val_loss = val_loss
+            impatience_counter = 0
+        else:
+            impatience_counter += 1
+            if impatience_counter >= early_stopping_patience:
+                print(f"Stopping early as val loss did not improve {early_stopping_patience} consecutive times")
+                break
 
-    if not save_dir.endswith("/"):
-        save_dir = save_dir + "/"
-    os.makedirs(save_dir, exist_ok=True)
-    torch.save({
-        "history": history,
-        "hparams": hparams
-    }, datetime.now().strftime(save_dir + "%Y-%m-%d_%H-%M-%S.run"))
     return history
+
+
+def save_checkpoint(chkpt_dict, filename, directory="./runs"):
+    directory = directory.rstrip("/")
+    os.makedirs(directory, exist_ok=True)
+    out_path = f"{directory}/{filename}"
+    torch.save(chkpt_dict, out_path)
+    print("Saved checkpoint", out_path)
 
 
 def evaluate_mse_nse(model, dataset):

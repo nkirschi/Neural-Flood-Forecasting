@@ -2,7 +2,7 @@ import torch
 
 from abc import ABC, abstractmethod
 from graffconv import GRAFFConv
-from torch.nn import Module, ModuleList
+from torch.nn import Module, ModuleList, LSTM
 from torch.nn.functional import mse_loss, relu
 from torch_geometric.nn import GCNConv, GCN2Conv, Linear
 from torch_geometric.utils import add_self_loops
@@ -68,7 +68,11 @@ class MLP(BaseModel):
 
     def apply_layer(self, layer, x, x_0, edge_index, edge_weights):
         return relu(layer(x))
+    
 
+class RNN(BaseModel):
+    pass  # TODO
+        
 
 class GCN(BaseModel):
     def __init__(self, in_channels, hidden_channels, num_hidden, param_sharing, edge_orientation, edge_weights):
