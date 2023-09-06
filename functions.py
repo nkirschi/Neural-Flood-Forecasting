@@ -199,15 +199,16 @@ def evaluate_mse_nse(model, dataset):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = model.to(device)
     model.eval()
-    node_mses = torch.zeros(dataset[0].num_nodes, 1).to(device)
+    node_mses = torch.zeros(dataset[0].num_nodes, 1)
     with torch.no_grad():
         for data in tqdm(dataset, desc="Testing"):
             data = data.to(device)
             pred = model(data.x, data.edge_index)
-            node_mses += mse_loss(pred, data.y, reduction="none") / len(dataset)
+            node_mses += mse_loss(pred, data.y, reduction="none").cpu() / len(dataset)
+    sigma_squared = dataset.std.square()
     if dataset.normalized:
-        node_mses *= dataset.std.square()
-    nose_nses = 1 - node_mses / dataset.std.square()
+        node_mses *= sigma_squared
+    nose_nses = 1 - node_mses / sigma_squared
     return node_mses, nose_nses
 
 def evaluate_directory(chkpt_dir, eval_func, readout_func):
