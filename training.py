@@ -31,7 +31,7 @@ hparams = {
 functions.ensure_reproducibility(hparams["training"]["random_seed"])
 
 for fold, (train_years, test_years) in enumerate(functions.k_fold_cross_validation_split(range(2000, 2018), k=6)):
-    for architecture in ["GCN", "ResGCN", "GCNII", "GRAFFNN"]:
+    for architecture in ["MLP", "GCN", "ResGCN", "GCNII"]:
         for edge_orientation in ["downstream", "upstream", "bidirectional"]:
             for adjacency_type in ["isolated", "binary", "stream_length", "elevation_difference", "average_slope", "learned"]:
                 hparams["training"]["train_years"] = train_years
