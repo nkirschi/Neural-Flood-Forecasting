@@ -30,7 +30,7 @@ hparams = {
 
 functions.ensure_reproducibility(hparams["training"]["random_seed"])
 
-for i, (train_years, test_years) in enumerate(functions.k_fold_cross_validation_split(range(2000, 2018), k=6)):
+for fold, (train_years, test_years) in enumerate(functions.k_fold_cross_validation_split(range(2000, 2018), k=6)):
     for architecture in ["GCN", "ResGCN", "GCNII", "GRAFFNN"]:
         for edge_orientation in ["downstream", "upstream", "bidirectional"]:
             for adjacency_type in ["isolated", "binary", "stream_length", "elevation_difference", "average_slope", "learned"]:
@@ -44,5 +44,5 @@ for i, (train_years, test_years) in enumerate(functions.k_fold_cross_validation_
                 history = functions.train(model, dataset, hparams)
             
                 functions.save_checkpoint(history, hparams,
-                                          f"{architecture}_{edge_orientation}_{adjacency_type}_{i}.run",
+                                          f"{architecture}_{edge_orientation}_{adjacency_type}_{fold}.run",
                                           directory="./runs/topology")
