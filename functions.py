@@ -185,6 +185,12 @@ def save_checkpoint(chkpt_dict, filename, directory="./runs"):
     print("Saved checkpoint", out_path)
 
 
+def k_fold_cross_validation_split(index, k):
+    index = list(index)
+    random.shuffle(index)
+    return [([i for i in index if i % k != j], [i for i in index if i % k == j]) for j in range(k)]
+
+
 def evaluate_mse_nse(model, dataset):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = model.to(device)
