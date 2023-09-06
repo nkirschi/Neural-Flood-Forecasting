@@ -19,7 +19,8 @@ class BaseModel(Module, ABC):
             self.layers = ModuleList([layerfun() for _ in range(num_hidden)])
         self.edge_weights = edge_weights
         self.edge_orientation = edge_orientation
-        self.loop_fill_value = 1.0 if (self.edge_weights == 0).all() else "mean"
+        if self.edge_weights is not None:
+            self.loop_fill_value = 1.0 if (self.edge_weights == 0).all() else "mean"
 
     def forward(self, x, edge_index, y=None, evo_tracking=False):
         if self.edge_weights is not None:
@@ -37,7 +38,8 @@ class BaseModel(Module, ABC):
                 edge_weights = edge_weights.repeat(2).to(x.device)
             elif self.edge_orientation != "downstream":
                 raise ValueError("unknown edge direction", self.edge_orientation)
-        edge_index, edge_weights = add_self_loops(edge_index, edge_weights, fill_value=self.loop_fill_value)
+        if self.edge_weights is not None:
+            edge_index, edge_weights = add_self_loops(edge_index, edge_weights, fill_value=self.loop_fill_value)
 
         x_0 = self.encoder(x)
         evolution = [x_0.detach()] if evo_tracking else None
