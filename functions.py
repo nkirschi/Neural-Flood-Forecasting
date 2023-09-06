@@ -185,6 +185,10 @@ def save_checkpoint(chkpt_dict, filename, directory="./runs"):
     print("Saved checkpoint", out_path)
 
 
+def load_checkpoint(chkpt_path):
+    return torch.load(chkpt_path)
+
+
 def k_fold_cross_validation_split(index, k):
     index = list(index)
     random.shuffle(index)
