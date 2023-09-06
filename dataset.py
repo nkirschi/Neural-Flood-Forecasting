@@ -17,8 +17,8 @@ class LamaHDataset(Dataset):
         super().__init__(root)  # calls download() and process() if necessary
 
         self.years = years
-        self.window_size_hrs = window_size
-        self.stride_length_hrs = stride_length
+        self.window_size = window_size
+        self.stride_length = stride_length
         self.lead_time = lead_time
         self.normalized = normalized
 
@@ -129,8 +129,8 @@ class LamaHDataset(Dataset):
 
     def get(self, idx):
         year_tensor, offset = self._decode_index(idx)
-        x = year_tensor[:, offset:(offset + self.window_size_hrs)]
-        y = year_tensor[:, offset + self.window_size_hrs + (self.lead_time - 1)]
+        x = year_tensor[:, offset:(offset + self.window_size)]
+        y = year_tensor[:, offset + self.window_size + (self.lead_time - 1)]
         return Data(x=x, y=y.unsqueeze(-1), edge_index=self.edge_index, edge_attr=self.edge_attr)
 
     def normalize(self, x):
@@ -143,5 +143,5 @@ class LamaHDataset(Dataset):
         for i, size in enumerate(self.year_sizes):
             idx -= size
             if idx < 0:
-                return self.year_tensors[i], self.stride_length_hrs * (idx + size)
+                return self.year_tensors[i], self.stride_length * (idx + size)
         raise AssertionError("Corrupt internal state. This should never happen!")
