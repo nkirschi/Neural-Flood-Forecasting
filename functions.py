@@ -164,7 +164,7 @@ def train(model, dataset, hparams, early_stopping_patience=5):
         print("[Epoch {0}/{1}] Train: {2:.4f} | Val {3:.4f}".format(
             epoch + 1, hparams['training']['num_epochs'], train_loss, val_loss
         ))
-        
+
         if val_loss < min_val_loss:
             min_val_loss = val_loss
             impatience_counter = 0
@@ -177,11 +177,14 @@ def train(model, dataset, hparams, early_stopping_patience=5):
     return history
 
 
-def save_checkpoint(chkpt_dict, filename, directory="./runs"):
+def save_checkpoint(history, hparams, filename, directory="./runs"):
     directory = directory.rstrip("/")
     os.makedirs(directory, exist_ok=True)
     out_path = f"{directory}/{filename}"
-    torch.save(chkpt_dict, out_path)
+    torch.save({
+        "history": history,
+        "hparams": hparams
+    }, out_path)
     print("Saved checkpoint", out_path)
 
 
@@ -210,6 +213,7 @@ def evaluate_mse_nse(model, dataset):
         node_mses *= sigma_squared
     nose_nses = 1 - node_mses / sigma_squared
     return node_mses, nose_nses
+
 
 def evaluate_directory(chkpt_dir, eval_func, readout_func):
     results = {}
