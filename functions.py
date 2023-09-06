@@ -87,9 +87,9 @@ def construct_model(hparams, dataset):
 
 def load_dataset(hparams, split):
     if split == "train":
-        years = range(2000, 2016)
+        years = hparams["training"]["train_years"]
     elif split == "test":
-        years = [2016, 2017]
+        years = set(range(2000, 2018)) - set(hparams["training"]["train_years"])
     else:
         raise ValueError("unknown split", split)
     return LamaHDataset("LamaH-CE",
