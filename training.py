@@ -27,7 +27,6 @@ hparams = {
     }
 }
 
-# run with CUDA_VISIBLE_DEVICES=1
 
 functions.ensure_reproducibility(hparams["training"]["random_seed"])
 
@@ -44,7 +43,6 @@ for i, (train_years, test_years) in enumerate(functions.k_fold_cross_validation_
                 model = functions.construct_model(hparams, dataset)
                 history = functions.train(model, dataset, hparams)
             
-                functions.save_checkpoint({
-                    "history": history,
-                    "hparams": hparams
-                }, f"{architecture}_{edge_orientation}_{adjacency_type}_{i}.run")
+                functions.save_checkpoint(history, hparams,
+                                          f"{architecture}_{edge_orientation}_{adjacency_type}_{i}.run",
+                                          directory="./runs/topology")
