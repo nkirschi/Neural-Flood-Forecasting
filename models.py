@@ -37,8 +37,7 @@ class BaseModel(Module, ABC):
                 edge_weights = edge_weights.repeat(2).to(x.device)
             elif self.edge_orientation != "downstream":
                 raise ValueError("unknown edge direction", self.edge_orientation)
-        edge_index, edge_weights = add_self_loops(edge_index, edge_weights, fill_value=self.loop_fill_value,
-                                                  num_nodes=x.size(0))  # must be specified for IPUs
+        edge_index, edge_weights = add_self_loops(edge_index, edge_weights, fill_value=self.loop_fill_value)
 
         x_0 = self.encoder(x)
         evolution = [x_0.detach()] if evo_tracking else None
@@ -52,7 +51,7 @@ class BaseModel(Module, ABC):
 
         if evo_tracking:
             return x, evolution
-        if y is not None:  # IPU paradigm demands that models return the loss as 2nd output
+        if y is not None:  # IPU paradigm demands that models return the loss as 2nd output TODO refactor
             return x, mse_loss(x, y)
         return x
 
