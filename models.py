@@ -53,8 +53,6 @@ class BaseModel(Module, ABC):
 
         if evo_tracking:
             return x, evolution
-        if y is not None:  # IPU paradigm demands that models return the loss as 2nd output TODO refactor
-            return x, mse_loss(x, y)
         return x
 
     @abstractmethod

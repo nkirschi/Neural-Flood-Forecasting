@@ -115,7 +115,8 @@ def train_step(model, train_loader, optimizer, device):
     for batch in tqdm(train_loader, desc="Training"):
         batch = batch.to(device)
         optimizer.zero_grad()
-        out, loss = model(batch.x, batch.edge_index, batch.y)
+        out = model(batch.x, batch.edge_index)
+        loss = mse_loss(out, batch.y)
         loss.backward()
         optimizer.step()
         train_loss += loss.item() * batch.num_graphs / len(train_loader.dataset)
@@ -128,7 +129,8 @@ def val_step(model, val_loader, device):
     with torch.no_grad():
         for batch in tqdm(val_loader, desc="Validating"):
             batch = batch.to(device)
-            out, loss = model(batch.x, batch.edge_index, batch.y)
+            out = model(batch.x, batch.edge_index)
+            loss = mse_loss(out, batch.y)
             val_loss += loss.item() * batch.num_graphs / len(val_loader.dataset)
     return val_loss
 
