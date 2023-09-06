@@ -12,15 +12,15 @@ class LamaHDataset(Dataset):
     DATA_URL = "https://zenodo.org/record/5153305/files/1_LamaH-CE_daily_hourly.tar.gz"
 
     def __init__(self, root, years=range(2000, 2018), window_size=24, stride_length=1, lead_time=1, normalized=False):
+        if not set(years).issubset(range(2000, 2018)):
+            raise ValueError("Only years between 2000 and 2017 are supported")
         super().__init__(root)  # calls download() and process() if necessary
 
+        self.years = years
         self.window_size_hrs = window_size
         self.stride_length_hrs = stride_length
         self.lead_time = lead_time
         self.normalized = normalized
-        self.years = years
-        self.year_sizes = [(24 * (365 + int(year % 4 == 0)) - (window_size + lead_time)) // stride_length + 1
-                           for year in years]
 
         adjacency = pd.read_csv(self.processed_paths[0])
         self.gauges = list(sorted(set(adjacency["ID"]).union(adjacency["NEXTDOWNID"])))
@@ -34,6 +34,8 @@ class LamaHDataset(Dataset):
         self.mean = torch.tensor(statistics["mean"].values, dtype=torch.float).unsqueeze(-1)
         self.std = torch.tensor(statistics["std"].values, dtype=torch.float).unsqueeze(-1)
 
+        self.year_sizes = [(24 * (365 + int(year % 4 == 0)) - (window_size + lead_time)) // stride_length + 1
+                           for year in years]
         self.year_tensors = [[] for _ in years]
         print("Loading dataset into memory...")
         for gauge_id in tqdm(self.gauges):
