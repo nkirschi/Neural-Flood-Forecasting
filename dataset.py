@@ -13,7 +13,7 @@ class LamaHDataset(Dataset):
     Q_COL = "qobs"
     MET_COLS = [
         "prec",        # precipitation
-        "volsw_123"    # topsoil moisture
+        "volsw_123",   # topsoil moisture
         "2m_temp",     # air temperature
         "10m_wind_u",  # wind velocity eastwards
         "10m_wind_v",  # wind velocity northwards
