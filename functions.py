@@ -47,12 +47,12 @@ def construct_model(hparams, dataset):
     edge_weights = get_edge_weights(hparams["model"]["adjacency_type"], dataset.edge_attr)
     model_arch = hparams["model"]["architecture"]
     if model_arch == "MLP":
-        return MLP(in_channels=hparams["data"]["window_size"],
+        return MLP(in_channels=hparams["data"]["window_size"] * (1 + len(dataset.MET_COLS)),
                    hidden_channels=hparams["model"]["hidden_channels"],
                    num_hidden=hparams["model"]["num_layers"],
                    param_sharing=hparams["model"]["param_sharing"])
     elif model_arch == "GCN":
-        return GCN(in_channels=hparams["data"]["window_size"],
+        return GCN(in_channels=hparams["data"]["window_size"] * (1 + len(dataset.MET_COLS)),
                    hidden_channels=hparams["model"]["hidden_channels"],
                    num_hidden=hparams["model"]["num_layers"],
                    param_sharing=hparams["model"]["param_sharing"],
@@ -60,21 +60,21 @@ def construct_model(hparams, dataset):
                    edge_weights=edge_weights
                    )
     elif model_arch == "ResGCN":
-        return ResGCN(in_channels=hparams["data"]["window_size"],
+        return ResGCN(in_channels=hparams["data"]["window_size"] * (1 + len(dataset.MET_COLS)),
                       hidden_channels=hparams["model"]["hidden_channels"],
                       num_hidden=hparams["model"]["num_layers"],
                       param_sharing=hparams["model"]["param_sharing"],
                       edge_orientation=hparams["model"]["edge_orientation"],
                       edge_weights=edge_weights)
     elif model_arch == "GCNII":
-        return GCNII(in_channels=hparams["data"]["window_size"],
+        return GCNII(in_channels=hparams["data"]["window_size"] * (1 + len(dataset.MET_COLS)),
                      hidden_channels=hparams["model"]["hidden_channels"],
                      num_hidden=hparams["model"]["num_layers"],
                      param_sharing=hparams["model"]["param_sharing"],
                      edge_orientation=hparams["model"]["edge_orientation"],
                      edge_weights=edge_weights)
     elif model_arch == "GRAFFNN":
-        return GRAFFNN(in_channels=hparams["data"]["window_size"],
+        return GRAFFNN(in_channels=hparams["data"]["window_size"] * (1 + len(dataset.MET_COLS)),
                        hidden_channels=hparams["model"]["hidden_channels"],
                        num_hidden=hparams["model"]["num_layers"],
                        param_sharing=hparams["model"]["param_sharing"],
