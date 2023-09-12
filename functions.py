@@ -197,7 +197,10 @@ def load_checkpoint(chkpt_path):
 def k_fold_cross_validation_split(index, k):
     index = list(index)
     random.shuffle(index)
-    return [([i for i in index if i % k != j], [i for i in index if i % k == j]) for j in range(k)]
+
+    return [([j for i, j in enumerate(index) if i % k != fold],
+             [j for i, j in enumerate(index) if i % k == fold])
+            for fold in range(k)]
 
 
 def evaluate_mse_nse(model, dataset):
