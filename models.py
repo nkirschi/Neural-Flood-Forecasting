@@ -23,6 +23,7 @@ class BaseModel(Module, ABC):
             self.loop_fill_value = 1.0 if (self.edge_weights == 0).all() else "mean"
 
     def forward(self, x, edge_index, evo_tracking=False):
+        x = x.flatten(1)
         if self.edge_weights is not None:
             num_graphs = edge_index.size(1) // len(self.edge_weights)
             edge_weights = self.edge_weights.repeat(num_graphs).to(x.device)

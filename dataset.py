@@ -40,8 +40,8 @@ class LamaHDataset(Dataset):
         self.edge_attr = torch.tensor(weight_cols.values, dtype=torch.float)
 
         stats_df = pd.read_csv(self.processed_paths[1], index_col="ID")
-        self.mean = torch.tensor(stats_df["mean"].values, dtype=torch.float).unsqueeze(-1)
-        self.std = torch.tensor(stats_df["std"].values, dtype=torch.float).unsqueeze(-1)
+        self.mean = torch.tensor(stats_df[[f"{col}_mean" for col in [self.Q_COL] + self.MET_COLS]].values, dtype=torch.float)
+        self.std = torch.tensor(stats_df[[f"{col}_std" for col in [self.Q_COL] + self.MET_COLS]].values, dtype=torch.float)
 
         self.year_sizes = [(24 * (365 + int(year % 4 == 0)) - (window_size + lead_time)) // stride_length + 1
                            for year in years]
@@ -57,7 +57,7 @@ class LamaHDataset(Dataset):
                 for col in self.MET_COLS:
                     met_df[col] = (met_df[col] - stats_df.loc[gauge_id, f"{col}_mean"] / stats_df.loc[gauge_id, f"{col}_std"])
             for i, year in enumerate(years):
-                q_tensor = torch.tensor(q_df[q_df["YYYY"] == year][self.Q_COL].values, dtype=torch.float).unsqueeze(1)
+                q_tensor = torch.tensor(q_df[q_df["YYYY"] == year][self.Q_COL].values, dtype=torch.float).unsqueeze(-1)
                 met_tensor = torch.tensor(met_df[met_df["YYYY"] == year][self.MET_COLS].values, dtype=torch.float)
                 self.year_tensors[i].append(torch.cat([q_tensor, met_tensor], dim=1))
         self.year_tensors[:] = map(torch.stack, self.year_tensors)
@@ -152,15 +152,15 @@ class LamaHDataset(Dataset):
 
     def get(self, idx):
         year_tensor, offset = self._decode_index(idx)
-        x = year_tensor[:, offset:(offset + self.window_size)].flatten(1, 2)
+        x = year_tensor[:, offset:(offset + self.window_size)]
         y = year_tensor[:, offset + self.window_size + (self.lead_time - 1), 0]
         return Data(x=x, y=y.unsqueeze(-1), edge_index=self.edge_index, edge_attr=self.edge_attr)
 
     def normalize(self, x):
-        return (x - self.mean) / self.std
+        return (x - self.mean[:, None, :]) / self.std[:, None, :]
 
     def denormalize(self, x):
-        return self.std * x + self.mean
+        return self.std[:, None, :] * x + self.mean[:, None, :]
 
     def _decode_index(self, idx):
         for i, size in enumerate(self.year_sizes):
