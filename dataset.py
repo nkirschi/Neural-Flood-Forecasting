@@ -55,7 +55,7 @@ class LamaHDataset(Dataset):
             if normalized:
                 q_df[self.Q_COL] = (q_df[self.Q_COL] - stats_df.loc[gauge_id, f"{self.Q_COL}_mean"]) / stats_df.loc[gauge_id, f"{self.Q_COL}_std"]
                 for col in self.MET_COLS:
-                    met_df[col] = (met_df[col] - stats_df.loc[gauge_id, f"{col}_mean"] / stats_df.loc[gauge_id, f"{col}_std"])
+                    met_df[col] = (met_df[col] - stats_df.loc[gauge_id, f"{col}_mean"]) / stats_df.loc[gauge_id, f"{col}_std"]
             for i, year in enumerate(years):
                 q_tensor = torch.tensor(q_df[q_df["YYYY"] == year][self.Q_COL].values, dtype=torch.float).unsqueeze(-1)
                 met_tensor = torch.tensor(met_df[met_df["YYYY"] == year][self.MET_COLS].values, dtype=torch.float)
