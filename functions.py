@@ -6,7 +6,6 @@ import torch
 import torch.nn as nn
 
 from dataset import LamaHDataset
-from datetime import datetime
 from models import MLP, GCN, ResGCN, GCNII
 from torch.nn.functional import mse_loss
 from torch.utils.data import random_split
