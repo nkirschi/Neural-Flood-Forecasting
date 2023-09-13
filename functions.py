@@ -7,7 +7,7 @@ import torch.nn as nn
 
 from dataset import LamaHDataset
 from datetime import datetime
-from models import MLP, GCN, ResGCN, GCNII, GRAFFNN
+from models import MLP, GCN, ResGCN, GCNII
 from torch.nn.functional import mse_loss
 from torch.utils.data import random_split
 from torch_geometric.loader import DataLoader
@@ -73,15 +73,6 @@ def construct_model(hparams, dataset):
                      param_sharing=hparams["model"]["param_sharing"],
                      edge_orientation=hparams["model"]["edge_orientation"],
                      edge_weights=edge_weights)
-    elif model_arch == "GRAFFNN":
-        return GRAFFNN(in_channels=hparams["data"]["window_size"] * (1 + len(dataset.MET_COLS)),
-                       hidden_channels=hparams["model"]["hidden_channels"],
-                       num_hidden=hparams["model"]["num_layers"],
-                       param_sharing=hparams["model"]["param_sharing"],
-                       step_size=hparams["model"]["graff_step_size"],
-                       edge_orientation=hparams["model"]["edge_orientation"],
-                       edge_weights=edge_weights
-                       )
     raise ValueError("unknown model architecture", model_arch)
 
 

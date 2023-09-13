@@ -1,7 +1,6 @@
 import torch
 
 from abc import ABC, abstractmethod
-from graffconv import GRAFFConv
 from torch.nn import Module, ModuleList, LSTM
 from torch.nn.functional import mse_loss, relu
 from torch_geometric.nn import GCNConv, GCN2Conv, Linear
@@ -68,10 +67,6 @@ class MLP(BaseModel):
 
     def apply_layer(self, layer, x, x_0, edge_index, edge_weights):
         return relu(layer(x))
-    
-
-class RNN(BaseModel):
-    pass  # TODO
         
 
 class GCN(BaseModel):
@@ -98,12 +93,3 @@ class GCNII(BaseModel):
 
     def apply_layer(self, layer, x, x_0, edge_index, edge_weights):
         return relu(layer(x, x_0, edge_index, edge_weights))
-
-
-class GRAFFNN(BaseModel):
-    def __init__(self, in_channels, hidden_channels, num_hidden, param_sharing, step_size, edge_orientation, edge_weights):
-        layer_gen = lambda: GRAFFConv(channels=hidden_channels, step_size=step_size, add_self_loops=False)
-        super().__init__(in_channels, hidden_channels, num_hidden, param_sharing, layer_gen, edge_orientation, edge_weights)
-
-    def apply_layer(self, layer, x, x_0, edge_index, edge_weights):
-        return layer(x, edge_index, edge_weights)  # GRAFFConv already includes non-linearity
