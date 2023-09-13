@@ -4,7 +4,7 @@ hparams = {
     "data": {
         "window_size": 24,
         "stride_length": 1,
-        "lead_time": 3,
+        "lead_time": 6,
         "normalized": True,
     },
     "model": {
@@ -18,7 +18,7 @@ hparams = {
     "training": {
         "num_epochs": 30,
         "batch_size": 64,
-        "learning_rate": 1e-4,
+        "learning_rate": 5e-4,
         "weight_decay": 0,
         "random_seed": 42,
         "train_years": None,  # set below
