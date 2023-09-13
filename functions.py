@@ -141,7 +141,7 @@ def train(model, dataset, hparams, early_stopping_patience=5):
     model = model.to(device)
     print("Training on", device)
 
-    history = {"train_loss": [], "val_loss": [], "model_params": [], "optim_params": []}
+    history = {"train_loss": [], "val_loss": [], "best_model_params": None}
 
     min_val_loss = float("inf")
     impatience_counter = 0
@@ -151,16 +151,15 @@ def train(model, dataset, hparams, early_stopping_patience=5):
 
         history["train_loss"].append(train_loss)
         history["val_loss"].append(val_loss)
-        history["model_params"].append(copy.deepcopy(model.state_dict()))
-        history["optim_params"].append(copy.deepcopy(optimizer.state_dict()))
 
         print("[Epoch {0}/{1}] Train: {2:.4f} | Val {3:.4f}".format(
-            epoch + 1, hparams['training']['num_epochs'], train_loss, val_loss
+            epoch + 1, hparams["training"]["num_epochs"], train_loss, val_loss
         ))
 
         if val_loss < min_val_loss:
             min_val_loss = val_loss
             impatience_counter = 0
+            history["best_model_params"] = copy.deepcopy(model.state_dict())
         else:
             impatience_counter += 1
             if impatience_counter >= early_stopping_patience:
