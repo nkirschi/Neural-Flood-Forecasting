@@ -65,7 +65,7 @@ class LamaHDataset(Dataset):
     @property
     def raw_file_names(self):
         return ["B_basins_intermediate_all/1_attributes",
-                "B_basins_intermediate_all/2_timeseries"
+                "B_basins_intermediate_all/2_timeseries",
                 "D_gauges/2_timeseries"]
 
     @property
