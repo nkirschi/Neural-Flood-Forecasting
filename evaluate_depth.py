@@ -12,7 +12,7 @@ for num_layers in range(1, 21):
     summary_df = pd.DataFrame()
     fold_results = []
     for fold in range(6):
-        chkpt = functions.load_checkpoint(f"/scratch/kirschstein/runs/layers{num_layers:02d}_{fold}.run")
+        chkpt = functions.load_checkpoint(f"/scratch/kirschstein/runs/depth/layers{num_layers:02d}_{fold}.run")
         model, dataset = functions.load_model_and_dataset(chkpt)
         test_mse, test_nse = functions.evaluate_mse_nse(model, dataset)
         summary_df.loc[fold, "mean_mse"] = test_mse.mean().item()
