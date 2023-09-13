@@ -23,9 +23,11 @@ hparams = {
         "weight_decay": 0,
         "random_seed": 42,
         "train_years": None,  # set below
-        "holdout_size": 0.25,
+        "holdout_size": 0.15,
     }
 }
+
+DATASET_PATH = "/scratch/kirschstein/LamaH-CE"
 
 for fold, (train_years, test_years) in enumerate(functions.k_fold_cross_validation_split(range(2000, 2018), k=6)):
     for architecture in ["GCN", "ResGCN", "GCNII"]:
@@ -38,7 +40,7 @@ for fold, (train_years, test_years) in enumerate(functions.k_fold_cross_validati
 
                 functions.ensure_reproducibility(hparams["training"]["random_seed"])
 
-                dataset = functions.load_dataset(hparams, "train")
+                dataset = functions.load_dataset(DATASET_PATH, hparams, "train")
                 model = functions.construct_model(hparams, dataset)
                 history = functions.train(model, dataset, hparams)
 
