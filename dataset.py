@@ -48,9 +48,9 @@ class LamaHDataset(Dataset):
         self.year_tensors = [[] for _ in years]
         print("Loading dataset into memory...")
         for gauge_id in tqdm(self.gauges):
-            q_df = pd.read_csv(f"{self.raw_dir}/{self.raw_file_names[1]}/hourly/ID_{gauge_id}.csv",
+            q_df = pd.read_csv(f"{self.raw_dir}/{self.raw_file_names[2]}/hourly/ID_{gauge_id}.csv",
                                sep=";", usecols=["YYYY"] + [self.Q_COL])
-            met_df = pd.read_csv(f"{self.raw_dir}/{self.raw_file_names[2]}/hourly/ID_{gauge_id}.csv",
+            met_df = pd.read_csv(f"{self.raw_dir}/{self.raw_file_names[1]}/hourly/ID_{gauge_id}.csv",
                                  sep=";", usecols=["YYYY"] + self.MET_COLS)
             if normalized:
                 q_df[self.Q_COL] = (q_df[self.Q_COL] - stats_df.loc[gauge_id, f"{self.Q_COL}_mean"]) / stats_df.loc[gauge_id, f"{self.Q_COL}_std"]
@@ -65,8 +65,8 @@ class LamaHDataset(Dataset):
     @property
     def raw_file_names(self):
         return ["B_basins_intermediate_all/1_attributes",
-                "D_gauges/2_timeseries",
-                "B_basins_intermediate_all/2_timeseries"]
+                "B_basins_intermediate_all/2_timeseries"
+                "D_gauges/2_timeseries"]
 
     @property
     def processed_file_names(self):
@@ -106,9 +106,9 @@ class LamaHDataset(Dataset):
             index=pd.Index([], name="ID")
         )
         for gauge_id in tqdm(danube_gauges, desc="Gauge filtering"):
-            q_df = pd.read_csv(f"{self.raw_dir}/{self.raw_file_names[1]}/hourly/ID_{gauge_id}.csv",
+            q_df = pd.read_csv(f"{self.raw_dir}/{self.raw_file_names[2]}/hourly/ID_{gauge_id}.csv",
                                sep=";", usecols=["YYYY", "MM", "DD", "hh", "mm", self.Q_COL])
-            met_df = pd.read_csv(f"{self.raw_dir}/{self.raw_file_names[2]}/hourly/ID_{gauge_id}.csv",
+            met_df = pd.read_csv(f"{self.raw_dir}/{self.raw_file_names[1]}/hourly/ID_{gauge_id}.csv",
                                  sep=";", usecols=["YYYY"] + self.MET_COLS)
             if (q_df[self.Q_COL] >= 0).all():
                 q_df = q_df[(q_df["YYYY"] >= 2000) & (q_df["YYYY"] <= 2017)]
