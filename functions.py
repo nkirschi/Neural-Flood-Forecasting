@@ -91,10 +91,10 @@ def load_dataset(path, hparams, split):
                         normalized=hparams["data"]["normalized"])
 
 
-def load_model_and_dataset(chkpt):
+def load_model_and_dataset(chkpt, dataset_path):
     best_epoch = torch.tensor(chkpt["history"]["val_loss"]).argmin()
     model_params = chkpt["history"]["model_params"][best_epoch]
-    dataset = load_dataset(chkpt["hparams"], "test")
+    dataset = load_dataset(dataset_path, chkpt["hparams"], split="test")
     model = construct_model(chkpt["hparams"], dataset)
     model.load_state_dict(model_params, strict=False)
     return model, dataset
