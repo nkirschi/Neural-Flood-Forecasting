@@ -4,28 +4,30 @@ hparams = {
     "data": {
         "window_size": 24,
         "stride_length": 1,
-        "lead_time": 1,
-        "normalized": True
+        "lead_time": 6,
+        "normalized": True,
     },
     "model": {
         "architecture": "ResGCN",
         "num_layers": None,  # set below
-        "hidden_channels": 64,
+        "hidden_channels": 128,
         "param_sharing": False,
-        "graff_step_size": 1,
         "edge_orientation": "bidirectional",
-        "adjacency_type": "binary"
+        "adjacency_type": "binary",
     },
     "training": {
-        "num_epochs": 20,
+        "num_epochs": 30,
         "batch_size": 64,
-        "learning_rate": 1e-4,
+        "learning_rate": 5e-4,
         "weight_decay": 0,
         "random_seed": 42,
         "train_years": None,  # set below
-        "holdout_size": 0.25,
+        "holdout_size": 3/18 * 15/18,
     }
 }
+
+DATASET_PATH = "/scratch/kirschstein/LamaH-CE"
+CHECKPOINT_PATH = "./runs/topology"
 
 for fold, (train_years, test_years) in enumerate(functions.k_fold_cross_validation_split(range(2000, 2018), k=6)):
     for num_layers in range(1, 21):
@@ -34,10 +36,10 @@ for fold, (train_years, test_years) in enumerate(functions.k_fold_cross_validati
 
         functions.ensure_reproducibility(hparams["training"]["random_seed"])
 
-        dataset = functions.load_dataset(hparams, "train")
+        dataset = functions.load_dataset(DATASET_PATH, hparams, split="train")
         model = functions.construct_model(hparams, dataset)
         history = functions.train(model, dataset, hparams)
 
         functions.save_checkpoint(history, hparams,
                                   f"layers{num_layers:02d}_{fold}.run",
-                                  directory="./runs/depth")
+                                  directory=CHECKPOINT_PATH)
