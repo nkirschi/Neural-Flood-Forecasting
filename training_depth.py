@@ -27,7 +27,7 @@ hparams = {
 }
 
 DATASET_PATH = "/scratch/kirschstein/LamaH-CE"
-CHECKPOINT_PATH = "./runs/topology"
+CHECKPOINT_PATH = "./runs/depth"
 
 for fold, (train_years, test_years) in enumerate(functions.k_fold_cross_validation_split(range(2000, 2018), k=6)):
     for num_layers in range(1, 21):
