@@ -28,6 +28,7 @@ hparams = {
 
 DATASET_PATH = "./LamaH-CE"
 CHECKPOINT_PATH = "/scratch/kirschstein/runs/depth"
+dataset = functions.load_dataset(DATASET_PATH, hparams, split="train")
 
 for fold, (train_years, test_years) in enumerate([([2004, 2015, 2016, 2008, 2014, 2011, 2010, 2013, 2002, 2000, 2017, 2005, 2009, 2007, 2003], [2006, 2012, 2001]),
 ([2004, 2015, 2016, 2006, 2014, 2011, 2010, 2013, 2012, 2000, 2017, 2005, 2009, 2001, 2003], [2008, 2002, 2007]),
@@ -38,7 +39,6 @@ for fold, (train_years, test_years) in enumerate([([2004, 2015, 2016, 2008, 2014
 
         functions.ensure_reproducibility(hparams["training"]["random_seed"])
 
-        dataset = functions.load_dataset(DATASET_PATH, hparams, split="train")
         model = functions.construct_model(hparams, dataset)
         history = functions.train(model, dataset, hparams)
 
