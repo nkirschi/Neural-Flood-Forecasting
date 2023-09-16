@@ -29,8 +29,8 @@ hparams = {
 DATASET_PATH = "/scratch/kirschstein/LamaH-CE"
 CHECKPOINT_PATH = "./runs/topology"
 
-for fold, (train_years, test_years) in enumerate(functions.k_fold_cross_validation_split(range(2000, 2018), k=6)):
-    for architecture in ["GCNII"]:
+for fold, (train_years, test_years) in enumerate([([2004, 2015, 2016, 2006, 2014, 2011, 2010, 2013, 2012, 2000, 2017, 2005, 2009, 2001, 2003], [2008, 2002, 2007])]):
+    for architecture in ["GCN", "ResGCN", "GCNII"]:
         for edge_orientation in ["downstream", "upstream", "bidirectional"]:
             for adjacency_type in ["isolated", "binary", "stream_length", "elevation_difference", "average_slope", "learned"]:
                 hparams["training"]["train_years"] = train_years
