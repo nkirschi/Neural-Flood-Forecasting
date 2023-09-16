@@ -28,13 +28,13 @@ hparams = {
 
 DATASET_PATH = "./LamaH-CE"
 CHECKPOINT_PATH = "/scratch/kirschstein/runs/topology"
-dataset = functions.load_dataset(DATASET_PATH, hparams, split="train")
 
 for fold, (train_years, test_years) in enumerate([([2004, 2015, 2016, 2008, 2014, 2011, 2010, 2013, 2002, 2000, 2017, 2005, 2009, 2007, 2003], [2006, 2012, 2001])]):
+    hparams["training"]["train_years"] = train_years
+    dataset = functions.load_dataset(DATASET_PATH, hparams, split="train")
     for architecture in ["GCN", "ResGCN", "GCNII"]:
         for edge_orientation in ["downstream", "upstream", "bidirectional"]:
             for adjacency_type in ["isolated", "binary", "stream_length", "elevation_difference", "average_slope", "learned"]:
-                hparams["training"]["train_years"] = train_years
                 hparams["model"]["architecture"] = architecture
                 hparams["model"]["edge_orientation"] = edge_orientation
                 hparams["model"]["adjacency_type"] = adjacency_type
