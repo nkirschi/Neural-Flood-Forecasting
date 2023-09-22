@@ -4,16 +4,16 @@ import pandas as pd
 
 from datetime import datetime
 
-DATASET_PATH = "/scratch/kirschstein2/LamaH-CE"
+DATASET_PATH = "/scratch/kirschstein/LamaH-CE"
 CHECKPOINT_DIR = "./runs/topology"
-OUT_FILE = f"results_{datetime.now()}.txt"
+OUT_FILE = f"results_topology_{datetime.now()}.txt"
 
 results_string = ""
 for architecture in ["GCN", "ResGCN", "GCNII"]:
     for edge_orientation in ["downstream", "upstream", "bidirectional"]:
         for adjacency_type in ["isolated", "binary", "stream_length", "elevation_difference", "average_slope", "learned"]:
             print(architecture, edge_orientation, adjacency_type)
-            summary_df = pd.DataFrame()
+            summary_df = pd.DataFrame(columns=["mean_mse", "mean_nse"])
             fold_results = []
             for fold in range(6):
                 chkpt = functions.load_checkpoint(f"{CHECKPOINT_DIR}/{architecture}_{edge_orientation}_{adjacency_type}_{fold}.run")
@@ -22,10 +22,11 @@ for architecture in ["GCN", "ResGCN", "GCNII"]:
                 summary_df.loc[fold, "mean_mse"] = test_mse.mean().item()
                 summary_df.loc[fold, "mean_nse"] = test_nse.mean().item()
                 fold_results.append(torch.cat([test_mse, test_nse], dim=1))
+            fold_df = pd.DataFrame(torch.stack(fold_results).mean(dim=0), columns=["mean_mse", "mean_nse"])
             with open(OUT_FILE, "a") as f:
                 f.write(f"{architecture}_{edge_orientation}_{adjacency_type}\n")
-                f.write(str(pd.DataFrame(torch.stack(fold_results).mean(dim=0)).describe()) + "\n")
-                f.write(str(pd.DataFrame(summary_df).describe()) + "\n\n")
+                f.write(str(fold_df.describe()) + "\n")
+                f.write(str(summary_df.describe()) + "\n\n")
 
 with open(OUT_FILE, "r") as f:
     s = f.read()
