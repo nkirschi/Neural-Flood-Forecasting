@@ -4,8 +4,9 @@ import pandas as pd
 
 from datetime import datetime
 
-OUT_FILE = f"results_{datetime.now()}.txt"
+DATASET_PATH = "/scratch/kirschstein2/LamaH-CE"
 CHECKPOINT_DIR = "./runs/topology"
+OUT_FILE = f"results_{datetime.now()}.txt"
 
 results_string = ""
 for architecture in ["GCN", "ResGCN", "GCNII"]:
@@ -16,7 +17,7 @@ for architecture in ["GCN", "ResGCN", "GCNII"]:
             fold_results = []
             for fold in range(6):
                 chkpt = functions.load_checkpoint(f"{CHECKPOINT_DIR}/{architecture}_{edge_orientation}_{adjacency_type}_{fold}.run")
-                model, dataset = functions.load_model_and_dataset(chkpt)
+                model, dataset = functions.load_model_and_dataset(chkpt, DATASET_PATH)
                 test_mse, test_nse = functions.evaluate_mse_nse(model, dataset)
                 summary_df.loc[fold, "mean_mse"] = test_mse.mean().item()
                 summary_df.loc[fold, "mean_nse"] = test_nse.mean().item()
