@@ -15,7 +15,7 @@ for architecture in ["GCN", "ResGCN", "GCNII"]:
             print(architecture, edge_orientation, adjacency_type)
             summary_df = pd.DataFrame(columns=["mean_mse", "mean_nse"])
             fold_results = []
-            for fold in range(4,5):
+            for fold in range(4,6):
                 chkpt = functions.load_checkpoint(f"{CHECKPOINT_DIR}/{architecture}_{edge_orientation}_{adjacency_type}_{fold}.run")
                 model, dataset = functions.load_model_and_dataset(chkpt, DATASET_PATH)
                 test_mse, test_nse = functions.evaluate_mse_nse(model, dataset)
