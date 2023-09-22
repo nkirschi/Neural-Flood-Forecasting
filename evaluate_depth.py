@@ -5,7 +5,7 @@ import pandas as pd
 from datetime import datetime
 
 DATASET_PATH = "/scratch/kirschstein/LamaH-CE"
-CHECKPOINT_DIR = "./runs/depth"
+CHECKPOINT_DIR = "/scratch/kirschstein/runs/depth"
 OUT_FILE = f"results_depth_{datetime.now()}.txt"
 
 results_string = ""
