@@ -201,7 +201,7 @@ def evaluate_mse_nse(model, dataset):
             data = data.to(device)
             pred = model(data.x, data.edge_index)
             node_mses += mse_loss(pred, data.y, reduction="none").cpu() / len(dataset)
-    sigma_squared = dataset.std[:, 0].square()
+    sigma_squared = dataset.std[:, [0]].square()
     if dataset.normalized:
         node_mses *= sigma_squared
     nose_nses = 1 - node_mses / sigma_squared
