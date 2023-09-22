@@ -4,6 +4,12 @@ import pandas as pd
 
 from datetime import datetime
 
+
+# TODO delete
+import time
+time.sleep(24 * 60 * 60)  # one day
+
+
 DATASET_PATH = "/scratch/kirschstein/LamaH-CE"
 CHECKPOINT_DIR = "/scratch/kirschstein/runs/depth"
 OUT_FILE = f"results_depth_{datetime.now()}.txt"
