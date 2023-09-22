@@ -5,6 +5,7 @@ import pandas as pd
 from datetime import datetime
 
 OUT_FILE = f"results_{datetime.now()}.txt"
+CHECKPOINT_DIR = "./runs/topology"
 
 results_string = ""
 for architecture in ["GCN", "ResGCN", "GCNII"]:
