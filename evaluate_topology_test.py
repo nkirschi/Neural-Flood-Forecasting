@@ -13,7 +13,7 @@ for architecture in ["GCN", "ResGCN", "GCNII"]:
     for edge_orientation in ["downstream", "upstream", "bidirectional"]:
         for adjacency_type in ["isolated", "binary", "stream_length", "elevation_difference", "average_slope", "learned"]:
             print(architecture, edge_orientation, adjacency_type)
-            summary_df = pd.DataFrame(columns=["mean_mse", "mean_nse"])
+            summary_df = pd.DataFrame()
             fold_results = []
             for fold in range(4,6):
                 chkpt = functions.load_checkpoint(f"{CHECKPOINT_DIR}/{architecture}_{edge_orientation}_{adjacency_type}_{fold}.run")

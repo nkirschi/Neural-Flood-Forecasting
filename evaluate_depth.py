@@ -11,7 +11,7 @@ OUT_FILE = f"results_depth_{datetime.now()}.txt"
 results_string = ""
 for num_layers in range(1, 21):
     print(num_layers, "layers")
-    summary_df = pd.DataFrame(columns=["mean_mse", "mean_nse"])
+    summary_df = pd.DataFrame()
     fold_results = []
     for fold in range(6):
         chkpt = functions.load_checkpoint(f"{CHECKPOINT_DIR}/layers{num_layers:02d}_{fold}.run")
