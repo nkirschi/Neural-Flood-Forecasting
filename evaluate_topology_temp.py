@@ -4,7 +4,7 @@ import pandas as pd
 
 from datetime import datetime
 
-DATASET_PATH = "/scratch/kirschstein2/LamaH-CE"
+DATASET_PATH = "/scratch/kirschstein/LamaH-CE"
 CHECKPOINT_DIR = "./runs/topology"
 OUT_FILE = f"results_{datetime.now()}.txt"
 
