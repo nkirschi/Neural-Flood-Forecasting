@@ -12,8 +12,8 @@ hparams = {
         "num_layers": 20,
         "hidden_channels": 128,
         "param_sharing": False,
-        "edge_orientation": None,  # set below
-        "adjacency_type": None,  # set below
+        "edge_orientation": "downstream",
+        "adjacency_type": "isolated"
     },
     "training": {
         "num_epochs": 20,
