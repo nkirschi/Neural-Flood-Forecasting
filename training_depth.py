@@ -8,7 +8,7 @@ hparams = {
         "normalized": True,
     },
     "model": {
-        "architecture": "ResGCN",
+        "architecture": None,  # set below
         "num_layers": None,  # set below
         "hidden_channels": 128,
         "param_sharing": False,
@@ -30,16 +30,18 @@ DATASET_PATH = "/scratch/kirschstein/LamaH-CE"
 CHECKPOINT_PATH = "./runs/depth"
 
 for fold, (train_years, test_years) in enumerate(functions.k_fold_cross_validation_split(range(2000, 2018), k=6)):
-    for num_layers in range(1, 21):
-        hparams["training"]["train_years"] = train_years
-        hparams["model"]["num_layers"] = num_layers
+    for architecture in ["ResGCN", "GCNII"]:
+        for num_layers in range(1, 21):
+            hparams["training"]["train_years"] = train_years
+            hparams["model"]["architecture"] = architecture
+            hparams["model"]["num_layers"] = num_layers
 
-        functions.ensure_reproducibility(hparams["training"]["random_seed"])
+            functions.ensure_reproducibility(hparams["training"]["random_seed"])
 
-        dataset = functions.load_dataset(DATASET_PATH, hparams, split="train")
-        model = functions.construct_model(hparams, dataset)
-        history = functions.train(model, dataset, hparams)
+            dataset = functions.load_dataset(DATASET_PATH, hparams, split="train")
+            model = functions.construct_model(hparams, dataset)
+            history = functions.train(model, dataset, hparams)
 
-        functions.save_checkpoint(history, hparams,
-                                  f"layers{num_layers:02d}_{fold}.run",
-                                  directory=CHECKPOINT_PATH)
+            functions.save_checkpoint(history, hparams,
+                                      f"{architecture}_depth{num_layers:02d}_{fold}.run",
+                                      directory=CHECKPOINT_PATH)
