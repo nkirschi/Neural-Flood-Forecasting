@@ -13,7 +13,7 @@ hparams = {
         "hidden_channels": 128,
         "param_sharing": False,
         "edge_orientation": "bidirectional",
-        "adjacency_type": "binary",
+        "adjacency_type": "isolated",
     },
     "training": {
         "num_epochs": 20,
@@ -41,5 +41,5 @@ for fold, (train_years, test_years) in [(1, ([2004, 2016, 2006, 2008, 2014, 2011
         history = functions.train(model, dataset, hparams)
 
         functions.save_checkpoint(history, hparams,
-                                  f"GCNII_depth{num_layers:02d}_{fold}.run",
+                                  f"GCNII_isolated_depth{num_layers:02d}_{fold}.run",
                                   directory=CHECKPOINT_PATH)
