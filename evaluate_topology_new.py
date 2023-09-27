@@ -17,6 +17,6 @@ for architecture in ["GCN", "ResGCN", "GCNII"]:
                 chkpt = functions.load_checkpoint(f"{CHECKPOINT_DIR}/{run_id}.run")
                 model, dataset = functions.load_model_and_dataset(chkpt, DATASET_PATH)
                 test_mse, test_nse = functions.evaluate_mse_nse(model, dataset)
-                results_df.loc[run_id, "mean_mse"] = test_mse.mean().item()
-                results_df.loc[run_id, "mean_nse"] = test_nse.mean().item()
+                results_df.loc[run_id + "_MSE", range(len(test_mse))] = test_mse.squeeze()
+                results_df.loc[run_id + "_NSE", range(len(test_mse))] = test_nse.squeeze()
 results_df.to_csv(OUT_FILE)
