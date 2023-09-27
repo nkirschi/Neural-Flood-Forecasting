@@ -41,7 +41,7 @@ for fold, (train_years, test_years) in [(3, (
                                         ]:
     for architecture in ["ResGCN"]:
         for edge_orientation in ["downstream"]:
-            for adjacency_type in ["isolated"]:
+            for adjacency_type in ["binary"]:
                 hparams["training"]["train_years"] = train_years
                 hparams["model"]["architecture"] = architecture
                 hparams["model"]["edge_orientation"] = edge_orientation
