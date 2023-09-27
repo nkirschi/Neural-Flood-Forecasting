@@ -208,18 +208,6 @@ def evaluate_mse_nse(model, dataset):
     return node_mses, nose_nses
 
 
-def evaluate_directory(chkpt_dir, eval_func, readout_func):
-    results = {}
-    for file in os.listdir(chkpt_dir):
-        try:
-            chkpt = torch.load(chkpt_dir + "/" + file)
-        except:
-            continue
-        model, dataset = load_model_and_dataset(chkpt)
-        results[readout_func(chkpt)] = eval_func(model, dataset)
-    return results
-
-
 def dirichlet_energy(x, edge_index, edge_weight, normalization=None):
     edge_index, edge_weight = to_undirected(edge_index, edge_weight)
     edge_index, edge_weight = get_laplacian(edge_index, edge_weight, normalization=normalization)
@@ -241,12 +229,3 @@ def evaluate_dirichlet_energy(model, dataset):
             dirichlet_stats.append(dir_energies)
     dirichlet_stats = torch.stack(dirichlet_stats)
     return dirichlet_stats
-
-
-def rolling_forecast(model, data, num_steps):
-    window = data.x
-    with torch.no_grad():
-        for i in range(num_steps):
-            pred = model(window[:, i:], data.edge_index)
-            window = torch.cat([window, pred], dim=1)
-    return window
