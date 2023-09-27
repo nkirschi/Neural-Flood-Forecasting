@@ -208,18 +208,20 @@ def evaluate_mse_nse(model, dataset):
     return node_mses, nose_nses
 
 
-def calculate_deviations_on_gauge(model, dataset, gauge_index):
+def calculate_predictions_and_deviations_on_gauge(model, dataset, gauge_index):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = model.to(device)
     model.eval()
+    predictions = []
     deviations = []
     with torch.no_grad():
         for data in tqdm(dataset, desc="Testing"):
             data = data.to(device)
             pred = model(data.x, data.edge_index)[gauge_index]
             target = data.y[gauge_index]
+            predictions.append(pred.item())
             deviations.append(abs(pred - target).item())
-    return deviations
+    return predictions, deviations
 
 
 def dirichlet_energy(x, edge_index, edge_weight, normalization=None):
