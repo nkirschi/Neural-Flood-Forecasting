@@ -5,12 +5,12 @@ from datetime import datetime
 
 DATASET_PATH = "/scratch/kirschstein/LamaH-CE"
 CHECKPOINT_DIR = "./runs/topology"
-OUT_FILE = f"results_topology_{datetime.now()}.txt"
+OUT_FILE = f"results_topology_{datetime.now()}.csv"
 
 results_df = pd.DataFrame()
-for architecture in ["GCN", "ResGCN", "GCNII"]:
-    for edge_orientation in ["downstream", "upstream", "bidirectional"]:
-        for adjacency_type in ["isolated", "binary", "stream_length", "elevation_difference", "average_slope", "learned"]:
+for architecture in ["GCNII"]:  # ["GCN", "ResGCN", "GCNII"]:
+    for edge_orientation in ["bidirectional"]:  # ["downstream", "upstream", "bidirectional"]:
+        for adjacency_type in ["learned"]:  # ["isolated", "binary", "stream_length", "elevation_difference", "average_slope", "learned"]:
             for fold in range(6):
                 run_id = f"{architecture}_{edge_orientation}_{adjacency_type}_{fold}"
                 print(run_id)
