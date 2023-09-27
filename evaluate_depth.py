@@ -10,7 +10,7 @@ CHECKPOINT_DIR = "./runs/depth"
 OUT_FILE = f"results_depth_{datetime.now()}.txt"
 
 results_string = ""
-for architecture in ["GCNII"]: #["ResGCN", "GCNII"]:
+for architecture in ["ResGCN", "GCNII"]:
     for num_layers in range(1, 21):
         print(f"{architecture}_depth{num_layers:02d}")
         summary_df = pd.DataFrame()
