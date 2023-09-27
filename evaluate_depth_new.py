@@ -4,8 +4,8 @@ import pandas as pd
 from datetime import datetime
 
 DATASET_PATH = "/scratch/kirschstein/LamaH-CE"
-CHECKPOINT_DIR = "./runs/topology"
-OUT_FILE = f"results_topology_{datetime.now()}.csv"
+CHECKPOINT_DIR = "./runs/depth"
+OUT_FILE = f"results_depth_{datetime.now()}.csv"
 
 results_df = pd.DataFrame()
 for architecture in ["ResGCN", "GCNII"]:
