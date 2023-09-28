@@ -3,7 +3,7 @@ import pandas as pd
 
 from datetime import datetime
 
-DATASET_PATH = "/scratch/kirschstein/LamaH-CE"
+DATASET_PATH = "/path/to/LamaH-CE"
 CHECKPOINT_DIR = "./runs/topology"
 OUT_FILE = f"results_topology_{datetime.now()}.csv"
 
