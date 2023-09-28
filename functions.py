@@ -237,7 +237,7 @@ def evaluate_dirichlet_energy(model, dataset):
     model.eval()
     dirichlet_stats = []
     with torch.no_grad():
-        edge_weights = model.edge_weights.detach().nan_to_num()
+        edge_weights = model.edge_weights.detach().nan_to_num().to(device)
         for data in tqdm(dataset, desc="Testing"):
             data = data.to(device)
             _, evo = model(data.x, data.edge_index, evo_tracking=True)
