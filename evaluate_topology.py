@@ -4,7 +4,7 @@ import pandas as pd
 from datetime import datetime
 
 DATASET_PATH = "/path/to/LamaH-CE"
-CHECKPOINT_PATH = "./checkpoint/topology"
+CHECKPOINT_PATH = "./checkpoints/topology"
 OUT_FILE = f"results/results_topology_{datetime.now()}.csv"
 
 results_df = pd.DataFrame()

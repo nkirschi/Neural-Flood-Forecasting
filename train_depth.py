@@ -27,7 +27,7 @@ hparams = {
 }
 
 DATASET_PATH = "/path/to/LamaH-CE"
-CHECKPOINT_PATH = "./checkpoint/depth"
+CHECKPOINT_PATH = "./checkpoints/depth"
 
 for fold, (train_years, test_years) in enumerate(functions.k_fold_cross_validation_split(range(2000, 2018), k=6)):
     for architecture in ["ResGCN", "GCNII"]:
