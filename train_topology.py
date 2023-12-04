@@ -16,20 +16,24 @@ hparams = {
         "adjacency_type": None,  # set below
     },
     "training": {
-        "num_epochs": 30,
+        "num_epochs": 20,
         "batch_size": 64,
-        "learning_rate": 5e-4,
-        "weight_decay": 0,
+        "learning_rate": 1e-3,
+        "weight_decay": 5e-4,
         "random_seed": 42,
         "train_years": None,  # set below
-        "holdout_size": 3/18 * 15/18,
+        "holdout_size": 1/5,
     }
 }
 
-DATASET_PATH = "/path/to/LamaH-CE"
+DATASET_PATH = "/scratch//LamaH-CE"
 CHECKPOINT_PATH = "./checkpoints/topology"
 
-for fold, (train_years, test_years) in enumerate(functions.k_fold_cross_validation_split(range(2000, 2018), k=6)):
+for fold, (train_years, test_years) in enumerate([([2001, 2005, 2009, 2013], [2017]),
+                                                  ([2002, 2006, 2010, 2014], [2017]),
+                                                  ([2003, 2007, 2011, 2015], [2017]),
+                                                  ([2004, 2008, 2012, 2016], [2017])]):
+# for fold, (train_years, test_years) in enumerate(functions.k_fold_cross_validation_split(range(2000, 2018), k=6)):
     for architecture in ["GCN", "ResGCN", "GCNII"]:
         for edge_orientation in ["downstream", "upstream", "bidirectional"]:
             for adjacency_type in ["isolated", "binary", "stream_length", "elevation_difference", "average_slope", "learned"]:
