@@ -22,7 +22,6 @@ class LamaHDataset(Dataset):
                  window_size=24, stride_length=1, lead_time=6, normalized=False):
         if not set(years).issubset(range(2000, 2018)):
             raise ValueError("Only years between 2000 and 2017 are supported")
-        super().__init__(root_dir)  # calls download() and process() if necessary
 
         self.years = years
         self.base_gauge_id = base_gauge_id
@@ -31,6 +30,8 @@ class LamaHDataset(Dataset):
         self.stride_length = stride_length
         self.lead_time = lead_time
         self.normalized = normalized
+
+        super().__init__(root_dir)  # calls download() and process() if necessary
 
         adj_df = pd.read_csv(self.processed_paths[0])
         self.gauges = list(sorted(set(adj_df["ID"]).union(adj_df["NEXTDOWNID"])))
