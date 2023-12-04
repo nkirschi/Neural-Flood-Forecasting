@@ -109,7 +109,7 @@ class LamaHDataset(Dataset):
               + ("with graph rewiring" if self.rewire_graph else "without graph rewiring"))
 
         for gauge_id in tqdm(connected_gauges - feasible_gauges, desc="Bad gauge removal"):
-            self._remove_gauge_edges(gauge_id, adj_df)
+            adj_df = self._remove_gauge_edges(gauge_id, adj_df)
 
         print("Saving final adjacency list to", self.processed_paths[0])
         adj_df["strm_slope"] = adj_df["elev_diff"] / adj_df["dist_hdn"]
@@ -140,29 +140,30 @@ class LamaHDataset(Dataset):
         if (q_df[self.Q_COL] >= 0).all():
             q_df = q_df[(q_df["YYYY"] >= 2000) & (q_df["YYYY"] <= 2017)]
             met_df = met_df[(met_df["YYYY"] >= 2000) & (met_df["YYYY"] <= 2017)]
-            if len(q_df) == (18 * 365 + 5) * 24:  # number of hours in 2000-2017
+            if len(q_df) == (18 * 365 + 5) * 24 and len(met_df) == (18 * 365 + 5) * 24:  # number of hours in 2000-2017
                 assert tuple(q_df.iloc[0, :4]) == (2000, 1, 1, 0) and tuple(q_df.iloc[-1, :4]) == (2017, 12, 31, 23)
+                assert tuple(met_df.iloc[0, :4]) == (2000, 1, 1, 0) and tuple(met_df.iloc[-1, :4]) == (2017, 12, 31, 23)
                 return True, [q_df[self.Q_COL].mean(), q_df[self.Q_COL].std()] \
                              + sum([[met_df[col].mean(), met_df[col].std()] for col in self.MET_COLS], [])
 
         return False, None
 
-    def _remove_gauge_edges(self, gauge_id, stream_dist):
-        incoming_edges = stream_dist.loc[stream_dist["NEXTDOWNID"] == gauge_id]
-        outgoing_edges = stream_dist.loc[stream_dist["ID"] == gauge_id]
+    def _remove_gauge_edges(self, gauge_id, adj_df):
+        incoming_edges = adj_df.loc[adj_df["NEXTDOWNID"] == gauge_id]
+        outgoing_edges = adj_df.loc[adj_df["ID"] == gauge_id]
 
-        stream_dist.drop(labels=incoming_edges.index, inplace=True)
-        stream_dist.drop(labels=outgoing_edges.index, inplace=True)
+        adj_df.drop(labels=incoming_edges.index, inplace=True)
+        adj_df.drop(labels=outgoing_edges.index, inplace=True)
 
         if self.rewire_graph:  # need to rewire nodes that are adjacent to a deleted node
             bypass = incoming_edges.merge(outgoing_edges, how="cross", suffixes=["", "_"])
             bypass["NEXTDOWNID"] = bypass["NEXTDOWNID_"]
             bypass["dist_hdn"] += bypass["dist_hdn_"]
             bypass["elev_diff"] += bypass["elev_diff_"]
-            stream_dist = pd.concat([stream_dist, bypass[["ID", "NEXTDOWNID", "dist_hdn", "elev_diff"]]],
-                                    ignore_index=True, copy=False)
+            adj_df = pd.concat([adj_df, bypass[["ID", "NEXTDOWNID", "dist_hdn", "elev_diff"]]],
+                               ignore_index=True, copy=False)
 
-        stream_dist.reset_index()
+        return adj_df.reset_index()
 
     def len(self):
         return sum(self.year_sizes)
