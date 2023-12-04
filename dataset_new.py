@@ -182,3 +182,13 @@ class LamaHDataset(Dataset):
 
     def denormalize(self, x):
         return self.std[:, None, :] * x + self.mean[:, None, :]
+
+    def longest_path(self):
+        def longest_upstream_path(gauge_idx):
+            predecessor_ids = self.edge_index[0, [self.edge_index[1] == gauge_idx]].tolist()
+            if not predecessor_ids:
+                return 0
+            else:
+                return 1 + max(longest_upstream_path(pred_id) for pred_id in predecessor_ids)
+
+        return max(longest_upstream_path(start_idx) for start_idx in self.edge_index[1].unique())
