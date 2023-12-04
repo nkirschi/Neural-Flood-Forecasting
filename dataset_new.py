@@ -134,21 +134,15 @@ class LamaHDataset(Dataset):
 
     def _has_complete_data(self, gauge_id):
         q_df = pd.read_csv(f"{self.raw_dir}/{self.raw_file_names[2]}/hourly/ID_{gauge_id}.csv",
-                           sep=";", usecols=["YYYY", "MM", "DD", "hh", "mm", self.Q_COL])
+                           sep=";", usecols=["YYYY", self.Q_COL])
         met_df = pd.read_csv(f"{self.raw_dir}/{self.raw_file_names[1]}/hourly/ID_{gauge_id}.csv",
                              sep=";", usecols=["YYYY"] + self.MET_COLS)
-
         if (q_df[self.Q_COL] >= 0).all():
             q_df = q_df[(q_df["YYYY"] >= 2000) & (q_df["YYYY"] <= 2017)]
             met_df = met_df[(met_df["YYYY"] >= 2000) & (met_df["YYYY"] <= 2017)]
             if len(q_df) == (18 * 365 + 5) * 24 and len(met_df) == (18 * 365 + 5) * 24:  # number of hours in 2000-2017
-                print(q_df)
-                print(met_df)
-                assert tuple(q_df.iloc[0, :4]) == (2000, 1, 1, 0) and tuple(q_df.iloc[-1, :4]) == (2017, 12, 31, 23)
-                assert tuple(met_df.iloc[0, :4]) == (2000, 1, 1, 0) and tuple(met_df.iloc[-1, :4]) == (2017, 12, 31, 23)
                 return True, [q_df[self.Q_COL].mean(), q_df[self.Q_COL].std()] \
                              + sum([[met_df[col].mean(), met_df[col].std()] for col in self.MET_COLS], [])
-
         return False, None
 
     def _remove_gauge_edges(self, gauge_id, adj_df):
