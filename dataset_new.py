@@ -112,11 +112,12 @@ class LamaHDataset(Dataset):
             adj_df = self._remove_gauge_edges(gauge_id, adj_df)
 
         print("Saving final adjacency list to", self.processed_paths[0])
-        adj_df["strm_slope"] = adj_df["elev_diff"] / adj_df["dist_hdn"]
+        adj_df["strm_slope"] = adj_df["elev_diff"] / adj_df["dist_hdn"]  # re-calculate
         adj_df.sort_values(by="ID", inplace=True)
         adj_df.to_csv(self.processed_paths[0], index=False)
 
         print("Saving feature summary statistics to", self.processed_paths[1], end="\n\n")
+        stats_df.sort_values(by="ID", inplace=True)
         stats_df.to_csv(self.processed_paths[1], index=True)
 
     def _collect_upstream(self, gauge_id, adj_df, stats_df):
