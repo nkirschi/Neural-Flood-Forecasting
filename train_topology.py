@@ -18,8 +18,8 @@ hparams = {
     "training": {
         "num_epochs": 20,
         "batch_size": 64,
-        "learning_rate": 1e-3,
-        "weight_decay": 5e-4,
+        "learning_rate": 5e-4,
+        "weight_decay": 1e-4,
         "random_seed": 42,
         "train_years": None,  # set below
         "holdout_size": 1/5,
@@ -27,7 +27,7 @@ hparams = {
 }
 
 DATASET_PATH = "/scratch/kirschstein/LamaH-CE"
-CHECKPOINT_PATH = "/scratch/kirschstein/topology"
+CHECKPOINT_PATH = "/scratch/kirschstein/runs/topology"
 
 for fold, (train_years, test_years) in enumerate([([2000, 2003, 2006, 2009, 2012], [2015, 2016]),
                                                   ([2001, 2004, 2007, 2010, 2013], [2015, 2017]),
