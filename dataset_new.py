@@ -121,7 +121,6 @@ class LamaHDataset(Dataset):
         stats_df.to_csv(self.processed_paths[1], index=True)
 
     def _collect_upstream(self, gauge_id, adj_df, stats_df):
-        print("Now working on ID", gauge_id)
         collected_ids = set()
         is_complete, gauge_stats = self._has_complete_data(gauge_id)
         if is_complete:
