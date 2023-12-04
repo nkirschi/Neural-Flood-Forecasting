@@ -142,6 +142,8 @@ class LamaHDataset(Dataset):
             q_df = q_df[(q_df["YYYY"] >= 2000) & (q_df["YYYY"] <= 2017)]
             met_df = met_df[(met_df["YYYY"] >= 2000) & (met_df["YYYY"] <= 2017)]
             if len(q_df) == (18 * 365 + 5) * 24 and len(met_df) == (18 * 365 + 5) * 24:  # number of hours in 2000-2017
+                print(q_df)
+                print(met_df)
                 assert tuple(q_df.iloc[0, :4]) == (2000, 1, 1, 0) and tuple(q_df.iloc[-1, :4]) == (2017, 12, 31, 23)
                 assert tuple(met_df.iloc[0, :4]) == (2000, 1, 1, 0) and tuple(met_df.iloc[-1, :4]) == (2017, 12, 31, 23)
                 return True, [q_df[self.Q_COL].mean(), q_df[self.Q_COL].std()] \
