@@ -29,10 +29,9 @@ hparams = {
 DATASET_PATH = "/scratch//LamaH-CE"
 CHECKPOINT_PATH = "./checkpoints/topology"
 
-for fold, (train_years, test_years) in enumerate([([2001, 2005, 2009, 2013], [2017]),
-                                                  ([2002, 2006, 2010, 2014], [2017]),
-                                                  ([2003, 2007, 2011, 2015], [2017]),
-                                                  ([2004, 2008, 2012, 2016], [2017])]):
+for fold, (train_years, test_years) in enumerate([([2000, 2003, 2006, 2009, 2012], [2015, 2016]),
+                                                  ([2001, 2004, 2007, 2010, 2013], [2015, 2017]),
+                                                  ([2002, 2005, 2008, 2011, 2014], [2016, 2017])]):
 # for fold, (train_years, test_years) in enumerate(functions.k_fold_cross_validation_split(range(2000, 2018), k=6)):
     for architecture in ["GCN", "ResGCN", "GCNII"]:
         for edge_orientation in ["downstream", "upstream", "bidirectional"]:
