@@ -159,8 +159,7 @@ class LamaHDataset(Dataset):
             adj_df = pd.concat([adj_df, bypass[["ID", "NEXTDOWNID", "dist_hdn", "elev_diff"]]],
                                ignore_index=True, copy=False)
 
-        adj_df.reset_index(drop=True, inplace=True)
-        return adj_df
+        return adj_df.reset_index(drop=True)
 
     def len(self):
         return sum(self.year_sizes)
