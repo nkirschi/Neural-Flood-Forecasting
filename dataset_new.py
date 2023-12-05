@@ -104,6 +104,7 @@ class LamaHDataset(Dataset):
         connected_gauges = set(adj_df["ID"]).union(adj_df["NEXTDOWNID"])
         print(f"Discovering feasible gauges...")
         feasible_gauges = set(self._collect_upstream(self.base_gauge_id, adj_df, stats_df))
+        print()
         assert feasible_gauges.issubset(connected_gauges)
         print(f"Discovered {len(feasible_gauges)} feasible gauges starting at ID {self.base_gauge_id}."
               + ("with graph rewiring" if self.rewire_graph else "without graph rewiring"))
@@ -121,6 +122,7 @@ class LamaHDataset(Dataset):
         stats_df.to_csv(self.processed_paths[1], index=True)
 
     def _collect_upstream(self, gauge_id, adj_df, stats_df):
+        print(f"Processing gauge #{gauge_id}", end="\r", flush=True)
         collected_ids = set()
         is_complete, gauge_stats = self._has_complete_data(gauge_id)
         if is_complete:
