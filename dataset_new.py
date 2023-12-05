@@ -106,7 +106,7 @@ class LamaHDataset(Dataset):
         feasible_gauges = set(self._collect_upstream(self.base_gauge_id, adj_df, stats_df))
         print()
         assert feasible_gauges.issubset(connected_gauges)
-        print(f"Discovered {len(feasible_gauges)} feasible gauges starting at ID {self.base_gauge_id}."
+        print(f"Discovered {len(feasible_gauges)} feasible gauges starting at ID {self.base_gauge_id} "
               + ("with graph rewiring" if self.rewire_graph else "without graph rewiring"))
 
         for gauge_id in tqdm(connected_gauges - feasible_gauges, desc="Bad gauge removal"):
