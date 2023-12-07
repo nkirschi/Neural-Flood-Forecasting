@@ -19,7 +19,7 @@ hparams = {
     },
     "training": {
         "num_epochs": 20,
-        "batch_size": 128,
+        "batch_size": 64,
         "learning_rate": 5e-3,
         "weight_decay": 0,
         "random_seed": 42,
