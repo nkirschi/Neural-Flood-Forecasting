@@ -79,7 +79,7 @@ def load_dataset(path, hparams, split):
     if split == "train":
         years = hparams["training"]["train_years"]
     elif split == "test":
-        years = set(range(2000, 2018)) - set(hparams["training"]["train_years"])
+        years = [2016, 2017]
     else:
         raise ValueError("unknown split", split)
     return LamaHDataset(path,
