@@ -100,11 +100,11 @@ def load_model_and_dataset(chkpt, dataset_path):
     return model, dataset
 
 
-def train_step(model, train_loader, optimizer, device):
+def train_step(model, train_loader, optimizer, device, reset_running_loss_after=10):
     model.train()
     train_loss = 0.0
     running_loss = 0.0
-    running_counter = 0
+    running_counter = 1
     with tqdm(train_loader, desc="Training") as pbar:
         for batch in pbar:
             batch = batch.to(device)
@@ -114,23 +114,33 @@ def train_step(model, train_loader, optimizer, device):
             loss.backward()
             optimizer.step()
             train_loss += loss.item() * batch.num_graphs / len(train_loader.dataset)
-            running_loss += loss.item() / 10
-            if running_counter >= 10:
+            running_loss += loss.item() / reset_running_loss_after
+            running_counter += 1
+            if running_counter >= reset_running_loss_after:
                 pbar.set_postfix({"loss": running_loss})
-                running_counter = 0
+                running_counter = 1
                 running_loss = 0.0
     return train_loss
 
 
-def val_step(model, val_loader, device):
+def val_step(model, val_loader, device, reset_running_loss_after=10):
     model.eval()
     val_loss = 0.0
+    running_loss = 0.0
+    running_counter = 1
     with torch.no_grad():
-        for batch in tqdm(val_loader, desc="Validating"):
-            batch = batch.to(device)
-            out = model(batch.x, batch.edge_index)
-            loss = mse_loss(out, batch.y)
-            val_loss += loss.item() * batch.num_graphs / len(val_loader.dataset)
+        with tqdm(val_loader, desc="Validating") as pbar:
+            for batch in pbar:
+                batch = batch.to(device)
+                out = model(batch.x, batch.edge_index)
+                loss = mse_loss(out, batch.y)
+                val_loss += loss.item() * batch.num_graphs / len(val_loader.dataset)
+                running_loss += loss.item() / reset_running_loss_after
+                running_counter += 1
+                if running_counter >= reset_running_loss_after:
+                    pbar.set_postfix({"loss": running_loss})
+                    running_counter = 1
+                    running_loss = 0.0
     return val_loss
 
 
