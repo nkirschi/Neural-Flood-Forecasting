@@ -15,7 +15,6 @@ def _has_complete_data(gauge_id):
 
 
 def _collect_upstream(gauge_id, adj_df):
-    print(f"Processing gauge #{gauge_id}", end="\r", flush=True)
     collected_ids = set()
     is_complete = _has_complete_data(gauge_id)
     if is_complete:
