@@ -2,7 +2,7 @@ import pandas as pd
 
 
 def _has_complete_data(gauge_id):
-    q_df = pd.read_csv(f"c/D_gauges/2_timeseries//hourly/ID_{gauge_id}.csv",
+    q_df = pd.read_csv(f"LamaH-CE/raw/D_gauges/2_timeseries//hourly/ID_{gauge_id}.csv",
                        sep=";", usecols=["YYYY", "qobs"])
     met_df = pd.read_csv(f"LamaH-CE/raw/B_basins_intermediate_all/2_timeseries/hourly/ID_{gauge_id}.csv",
                          sep=";", usecols=["YYYY"] + ["prec", "volsw_123",  "2m_temp", "surf_press"])
