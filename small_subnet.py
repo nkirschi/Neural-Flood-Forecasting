@@ -2,7 +2,7 @@ import pandas as pd
 
 
 def _has_complete_data(gauge_id):
-    q_df = pd.read_csv(f"LamaH-CE/raw/D_gauges/2_timeseries//hourly/ID_{gauge_id}.csv",
+    q_df = pd.read_csv(f"c/D_gauges/2_timeseries//hourly/ID_{gauge_id}.csv",
                        sep=";", usecols=["YYYY", "qobs"])
     met_df = pd.read_csv(f"LamaH-CE/raw/B_basins_intermediate_all/2_timeseries/hourly/ID_{gauge_id}.csv",
                          sep=";", usecols=["YYYY"] + ["prec", "volsw_123",  "2m_temp", "surf_press"])
@@ -24,7 +24,7 @@ def _collect_upstream(gauge_id, adj_df):
     return collected_ids
 
 
-adj_df = pd.read_csv("LamaH-CE/B_basins_intermediate_all/1_attributes/Stream_dist.csv", sep=";")
+adj_df = pd.read_csv("LamaH-CE/raw/B_basins_intermediate_all/1_attributes/Stream_dist.csv", sep=";")
 connected_gauges = set(adj_df["ID"]).union(adj_df["NEXTDOWNID"])
 for base_gauge_id in connected_gauges:
     subnet = list(_collect_upstream(base_gauge_id, adj_df))
