@@ -31,9 +31,9 @@ hparams = {
 DATASET_PATH = "/scratch/kirschstein/LamaH-CE"
 CHECKPOINT_PATH = "/scratch/kirschstein/runs/topology"
 
-for fold, (train_years, test_years) in enumerate([(list(range(2000, 2016, 2)), [2016, 2017]),
-                                                  (list(range(2001, 2016, 2)), [2016, 2017]),
-                                                  (list(range(2008, 2016, 1)), [2016, 2017])]):
+for fold_id, (train_years, test_years) in enumerate([(list(range(2000, 2016, 2)), [2016, 2017]),
+                                                     (list(range(2001, 2016, 2)), [2016, 2017]),
+                                                     (list(range(2008, 2016, 1)), [2016, 2017])]):
     for architecture in ["ResGCN"]:  # ["GCN", "ResGCN", "GCNII"]
         for edge_orientation in ["bidirectional"]:  # ["downstream", "upstream", "bidirectional"]
             for adjacency_type in ["binary"]:  # ["isolated", "binary", "stream_length", "elevation_difference", "average_slope", "learned"]
@@ -51,5 +51,5 @@ for fold, (train_years, test_years) in enumerate([(list(range(2000, 2016, 2)), [
                 history = functions.train(model, dataset, hparams)
 
                 functions.save_checkpoint(history, hparams,
-                                          f"{architecture}_{edge_orientation}_{adjacency_type}_{fold}.run",
+                                          f"{architecture}_{edge_orientation}_{adjacency_type}_{fold_id}.run",
                                           directory=CHECKPOINT_PATH)
