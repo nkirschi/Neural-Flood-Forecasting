@@ -24,7 +24,7 @@ def _collect_upstream(gauge_id, adj_df):
     return collected_ids
 
 
-adj_df = pd.read_csv("B_basins_intermediate_all/1_attributes/Stream_dist.csv", sep=";")
+adj_df = pd.read_csv("LamaH-CE/B_basins_intermediate_all/1_attributes/Stream_dist.csv", sep=";")
 connected_gauges = set(adj_df["ID"]).union(adj_df["NEXTDOWNID"])
 for base_gauge_id in connected_gauges:
     subnet = list(_collect_upstream(base_gauge_id, adj_df))
