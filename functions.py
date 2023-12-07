@@ -103,14 +103,22 @@ def load_model_and_dataset(chkpt, dataset_path):
 def train_step(model, train_loader, optimizer, device):
     model.train()
     train_loss = 0.0
-    for batch in tqdm(train_loader, desc="Training"):
-        batch = batch.to(device)
-        optimizer.zero_grad()
-        out = model(batch.x, batch.edge_index)
-        loss = mse_loss(out, batch.y)
-        loss.backward()
-        optimizer.step()
-        train_loss += loss.item() * batch.num_graphs / len(train_loader.dataset)
+    running_loss = 0.0
+    running_counter = 0
+    with tqdm(train_loader, desc="Training") as pbar:
+        for batch in pbar:
+            batch = batch.to(device)
+            optimizer.zero_grad()
+            out = model(batch.x, batch.edge_index)
+            loss = mse_loss(out, batch.y)
+            loss.backward()
+            optimizer.step()
+            train_loss += loss.item() * batch.num_graphs / len(train_loader.dataset)
+            running_loss += loss.item() / 10
+            if running_counter >= 10:
+                pbar.set_postfix({"loss": running_loss})
+                running_counter = 0
+                running_loss = 0.0
     return train_loss
 
 
