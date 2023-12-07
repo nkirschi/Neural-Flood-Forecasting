@@ -30,5 +30,5 @@ for base_gauge_id in connected_gauges:
     subnet = list(_collect_upstream(base_gauge_id, adj_df))
     if len(subnet) <= 10:
         print(f"base {base_gauge_id} -> {subnet}")
-    if base_gauge_id == 399:
-        print(f"should be 375: {len(subnet)}")
+    else:
+        print(f"base {base_gauge_id} too big with {len(subnet)} nodes")
