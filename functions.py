@@ -84,6 +84,8 @@ def load_dataset(path, hparams, split):
         raise ValueError("unknown split", split)
     return LamaHDataset(path,
                         years=years,
+                        base_gauge_id=hparams["data"]["base_gauge_id"],
+                        rewire_graph=hparams["data"]["rewire_graph"],
                         window_size=hparams["data"]["window_size"],
                         stride_length=hparams["data"]["stride_length"],
                         lead_time=hparams["data"]["lead_time"],
@@ -180,15 +182,6 @@ def save_checkpoint(history, hparams, filename, directory="./runs"):
 
 def load_checkpoint(chkpt_path):
     return torch.load(chkpt_path)
-
-
-def k_fold_cross_validation_split(index, k):
-    index = list(index)
-    random.shuffle(index)
-
-    return [([j for i, j in enumerate(index) if i % k != fold],
-             [j for i, j in enumerate(index) if i % k == fold])
-            for fold in range(k)]
 
 
 def evaluate_mse_nse(model, dataset):
