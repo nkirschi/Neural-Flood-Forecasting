@@ -189,7 +189,7 @@ class LamaHDataset(Dataset):
 
     def longest_path(self):
         def longest_upstream_path(gauge_idx):
-            predecessor_ids = self.edge_index[0, [self.edge_index[1] == gauge_idx]].tolist()
+            predecessor_ids = self.edge_index[0, self.edge_index[1] == gauge_idx].tolist()
             if not predecessor_ids:
                 return 0
             else:
