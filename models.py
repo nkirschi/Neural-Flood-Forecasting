@@ -10,8 +10,8 @@ from torch_geometric.utils import add_self_loops
 class BaseModel(Module, ABC):
     def __init__(self, in_channels, hidden_channels, num_hidden, param_sharing, layerfun, edge_orientation, edge_weights):
         super().__init__()
-        self.encoder = Linear(in_channels, hidden_channels, weight_initializer="glorot")
-        self.decoder = Linear(hidden_channels, 1, weight_initializer="glorot")
+        self.encoder = Linear(in_channels, hidden_channels, weight_initializer="kaiming_uniform")
+        self.decoder = Linear(hidden_channels, 1, weight_initializer="kaiming_uniform")
         if param_sharing:
             self.layers = ModuleList(num_hidden * [layerfun()])
         else:
@@ -62,7 +62,7 @@ class BaseModel(Module, ABC):
 
 class MLP(BaseModel):
     def __init__(self, in_channels, hidden_channels, num_hidden, param_sharing):
-        layer_gen = lambda: Linear(hidden_channels, hidden_channels, weight_initializer="glorot")
+        layer_gen = lambda: Linear(hidden_channels, hidden_channels, weight_initializer="kaiming_uniform")
         super().__init__(in_channels, hidden_channels, num_hidden, param_sharing, layer_gen, None, None)
 
     def apply_layer(self, layer, x, x_0, edge_index, edge_weights):
