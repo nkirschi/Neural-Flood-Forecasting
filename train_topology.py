@@ -11,16 +11,16 @@ hparams = {
     },
     "model": {
         "architecture": None,  # set below
-        "num_layers": None,
+        "num_layers": None,  # set below
         "hidden_channels": 128,
         "param_sharing": False,
         "edge_orientation": None,  # set below
         "adjacency_type": None,  # set below
     },
     "training": {
-        "num_epochs": 20,
+        "num_epochs": 50,
         "batch_size": 64,
-        "learning_rate": 5e-3,
+        "learning_rate": 2e-3,
         "weight_decay": 0,
         "random_seed": 42,
         "train_years": None,  # set below
@@ -36,7 +36,7 @@ for fold_id, (train_years, test_years) in enumerate([(list(range(2000, 2016, 2))
                                                      (list(range(2008, 2016, 1)), [2016, 2017])]):
     for architecture in ["ResGCN"]:  # ["GCN", "ResGCN", "GCNII"]
         for edge_orientation in ["bidirectional"]:  # ["downstream", "upstream", "bidirectional"]
-            for adjacency_type in ["binary"]:  # ["isolated", "binary", "stream_length", "elevation_difference", "average_slope", "learned"]
+            for adjacency_type in ["isolated", "binary"]:  # ["isolated", "binary", "stream_length", "elevation_difference", "average_slope", "learned"]
                 hparams["training"]["train_years"] = train_years
                 hparams["model"]["architecture"] = architecture
                 hparams["model"]["edge_orientation"] = edge_orientation
