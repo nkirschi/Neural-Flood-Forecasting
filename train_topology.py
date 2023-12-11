@@ -21,7 +21,7 @@ hparams = {
         "num_epochs": 50,
         "batch_size": 64,
         "learning_rate": 2e-3,
-        "weight_decay": 0,
+        "weight_decay": 5e-4,
         "random_seed": 42,
         "train_years": None,  # set below
         "holdout_size": 1/5,
