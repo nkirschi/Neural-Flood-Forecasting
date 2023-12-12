@@ -144,7 +144,7 @@ def val_step(model, val_loader, device, reset_running_loss_after=10):
     return val_loss
 
 
-def train(model, dataset, hparams, early_stopping_patience=5):
+def train(model, dataset, hparams):
     print(summary(model, depth=2))
 
     holdout_size = hparams["training"]["holdout_size"]
@@ -162,7 +162,6 @@ def train(model, dataset, hparams, early_stopping_patience=5):
     history = {"train_loss": [], "val_loss": [], "best_model_params": None}
 
     min_val_loss = float("inf")
-    impatience_counter = 0
     for epoch in range(hparams["training"]["num_epochs"]):
         train_loss = train_step(model, train_loader, optimizer, device)
         val_loss = val_step(model, val_loader, device)
@@ -176,13 +175,7 @@ def train(model, dataset, hparams, early_stopping_patience=5):
 
         if val_loss < min_val_loss:
             min_val_loss = val_loss
-            impatience_counter = 0
             history["best_model_params"] = copy.deepcopy(model.state_dict())
-        else:
-            impatience_counter += 1
-            if impatience_counter >= early_stopping_patience:
-                print(f"Stopping early as val loss did not improve {early_stopping_patience} consecutive times")
-                break
 
     return history
 
