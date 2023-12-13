@@ -12,7 +12,7 @@ hparams = {
     "model": {
         "architecture": None,  # set below
         "num_layers": None,  # set below
-        "hidden_channels": 128,
+        "hidden_channels": 512, # 128,
         "param_sharing": False,
         "edge_orientation": None,  # set below
         "adjacency_type": None,  # set below
@@ -45,7 +45,7 @@ for fold_id, (train_years, test_years) in enumerate([(list(range(2000, 2016, 2))
                 functions.ensure_reproducibility(hparams["training"]["random_seed"])
 
                 dataset = functions.load_dataset(DATASET_PATH, hparams, split="train")
-                print(len(dataset))
+                print(dataset[0].shape)
                 hparams["model"]["num_layers"] = dataset.longest_path()
                 print(hparams["model"]["num_layers"], "layers used")
                 model = functions.construct_model(hparams, dataset)
