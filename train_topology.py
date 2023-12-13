@@ -45,7 +45,7 @@ for fold_id, (train_years, test_years) in enumerate([(list(range(2000, 2016, 2))
                 functions.ensure_reproducibility(hparams["training"]["random_seed"])
 
                 dataset = functions.load_dataset(DATASET_PATH, hparams, split="train")
-                print(dataset[0].shape)
+                print(dataset[0].x.shape)
                 hparams["model"]["num_layers"] = dataset.longest_path()
                 print(hparams["model"]["num_layers"], "layers used")
                 model = functions.construct_model(hparams, dataset)
