@@ -2,8 +2,8 @@ import functions
 
 hparams = {
     "data": {
-        "base_gauge_id": 71, # 399,
-        "rewire_graph": False, # True,
+        "base_gauge_id": 399,
+        "rewire_graph": True,
         "window_size": 24,
         "stride_length": 1,
         "lead_time": 6,
@@ -12,7 +12,7 @@ hparams = {
     "model": {
         "architecture": None,  # set below
         "num_layers": None,  # set below
-        "hidden_channels": 512, # 128,
+        "hidden_channels": 128,
         "param_sharing": False,
         "edge_orientation": None,  # set below
         "adjacency_type": None,  # set below
