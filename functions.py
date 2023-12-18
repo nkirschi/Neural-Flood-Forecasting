@@ -84,7 +84,7 @@ def load_dataset(path, hparams, split):
         raise ValueError("unknown split", split)
     return LamaHDataset(path,
                         years=years,
-                        base_gauge_id=hparams["data"]["base_gauge_id"],
+                        root_gauge_id=hparams["data"]["root_gauge_id"],
                         rewire_graph=hparams["data"]["rewire_graph"],
                         window_size=hparams["data"]["window_size"],
                         stride_length=hparams["data"]["stride_length"],

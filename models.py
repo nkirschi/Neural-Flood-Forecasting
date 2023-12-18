@@ -3,7 +3,7 @@ import torch
 from abc import ABC, abstractmethod
 from torch.nn import Module, ModuleList, LSTM
 from torch.nn.functional import mse_loss, relu
-from torch_geometric.nn import GCNConv, GCN2Conv, Linear
+from torch_geometric.nn import GCNConv, GCN2Conv, Linear, MessagePassing
 from torch_geometric.utils import add_self_loops
 
 
@@ -93,3 +93,4 @@ class GCNII(BaseModel):
 
     def apply_layer(self, layer, x, x_0, edge_index, edge_weights):
         return relu(layer(x, x_0, edge_index, edge_weights))
+
