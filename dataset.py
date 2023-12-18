@@ -18,13 +18,13 @@ class LamaHDataset(Dataset):
         "surf_press",  # surface pressure
     ]
 
-    def __init__(self, root_dir, years=range(2000, 2018), base_gauge_id=399, rewire_graph=True,
+    def __init__(self, root_dir, years=range(2000, 2018), root_gauge_id=399, rewire_graph=True,
                  window_size=24, stride_length=1, lead_time=6, normalized=False):
         if not set(years).issubset(range(2000, 2018)):
             raise ValueError("Only years between 2000 and 2017 are supported")
 
         self.years = years
-        self.base_gauge_id = base_gauge_id
+        self.root_gauge_id = root_gauge_id
         self.rewire_graph = rewire_graph
         self.window_size = window_size
         self.stride_length = stride_length
@@ -76,8 +76,8 @@ class LamaHDataset(Dataset):
 
     @property
     def processed_file_names(self):
-        return [f"adjacency_{self.base_gauge_id}_{self.rewire_graph}.csv",
-                f"statistics_{self.base_gauge_id}_{self.rewire_graph}.csv"]
+        return [f"adjacency_{self.root_gauge_id}_{self.rewire_graph}.csv",
+                f"statistics_{self.root_gauge_id}_{self.rewire_graph}.csv"]
 
     def download(self):
         print("Downloading LamaH-CE from Zenodo to", self.raw_dir)
@@ -103,10 +103,10 @@ class LamaHDataset(Dataset):
 
         connected_gauges = set(adj_df["ID"]).union(adj_df["NEXTDOWNID"])
         print(f"Discovering feasible gauges...")
-        feasible_gauges = set(self._collect_upstream(self.base_gauge_id, adj_df, stats_df))
+        feasible_gauges = set(self._collect_upstream(self.root_gauge_id, adj_df, stats_df))
         print()
         assert feasible_gauges.issubset(connected_gauges)
-        print(f"Discovered {len(feasible_gauges)} feasible gauges starting at ID {self.base_gauge_id} "
+        print(f"Discovered {len(feasible_gauges)} feasible gauges starting at ID {self.root_gauge_id} "
               + ("with graph rewiring" if self.rewire_graph else "without graph rewiring"))
 
         for gauge_id in tqdm(connected_gauges - feasible_gauges, desc="Bad gauge removal"):
