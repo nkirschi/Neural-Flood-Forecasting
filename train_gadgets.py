@@ -35,27 +35,23 @@ for fold_id, (train_years, test_years) in enumerate([(list(range(2000, 2016, 2))
                                                      (list(range(2001, 2016, 2)), [2016, 2017]),
                                                      (list(range(2008, 2016, 1)), [2016, 2017])]):
     for root_gauge_id in [71, 211, 387]:
+        hparams["data"]["root_gauge_id"] = root_gauge_id
+        dataset = functions.load_dataset(DATASET_PATH, hparams, split="train")
         for architecture in ["ResGCN"]:  # ["GCN", "ResGCN", "GCNII"]
             for edge_orientation in ["bidirectional"]:  # ["downstream", "upstream", "bidirectional"]
                 for adjacency_type in ["isolated", "binary"]:  # ["isolated", "binary", "stream_length", "elevation_difference", "average_slope", "learned"]
-                    hparams["data"]["root_gauge_id"] = root_gauge_id
                     hparams["training"]["train_years"] = train_years
                     hparams["model"]["architecture"] = architecture
                     hparams["model"]["edge_orientation"] = edge_orientation
                     hparams["model"]["adjacency_type"] = adjacency_type
+                    hparams["model"]["num_layers"] = dataset.longest_path()
 
                     functions.ensure_reproducibility(hparams["training"]["random_seed"])
-
-                    dataset = functions.load_dataset(DATASET_PATH, hparams, split="train")
                     print(dataset[0].x.shape)
-                    hparams["model"]["num_layers"] = dataset.longest_path()
                     print(hparams["model"]["num_layers"], "layers used")
+
                     model = functions.construct_model(hparams, dataset)
                     history = functions.train(model, dataset, hparams)
 
-                    functions.save_checkpoint(
-                        history,
-                        hparams,
-                        f"{root_gauge_id}_{architecture}_{edge_orientation}_{adjacency_type}_{fold_id}.run",
-                        directory=CHECKPOINT_PATH
-                    )
+                    chkpt_name = f"{root_gauge_id}_{architecture}_{edge_orientation}_{adjacency_type}_{fold_id}.run"
+                    functions.save_checkpoint(history, hparams, chkpt_name, directory=CHECKPOINT_PATH)

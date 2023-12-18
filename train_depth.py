@@ -42,6 +42,5 @@ for fold, (train_years, test_years) in enumerate(functions.k_fold_cross_validati
             model = functions.construct_model(hparams, dataset)
             history = functions.train(model, dataset, hparams)
 
-            functions.save_checkpoint(history, hparams,
-                                      f"{architecture}_bidirectional_binary_depth{num_layers:02d}_{fold}.run",
-                                      directory=CHECKPOINT_PATH)
+            chkpt_name = f"{architecture}_bidirectional_binary_depth{num_layers:02d}_{fold}.run"
+            functions.save_checkpoint(history, hparams, chkpt_name, directory=CHECKPOINT_PATH)

@@ -51,6 +51,5 @@ for fold_id, (train_years, test_years) in enumerate([(list(range(2000, 2016, 2))
                 model = functions.construct_model(hparams, dataset)
                 history = functions.train(model, dataset, hparams)
 
-                functions.save_checkpoint(history, hparams,
-                                          f"{architecture}_{edge_orientation}_{adjacency_type}_{fold_id}.run",
-                                          directory=CHECKPOINT_PATH)
+                chkpt_name = f"{architecture}_{edge_orientation}_{adjacency_type}_{fold_id}.run"
+                functions.save_checkpoint(history, hparams, chkpt_name, directory=CHECKPOINT_PATH)
