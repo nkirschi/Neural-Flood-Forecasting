@@ -34,10 +34,11 @@ CHECKPOINT_PATH = "/scratch/kirschstein/runs/gadgets"
 for fold_id, (train_years, test_years) in enumerate([(list(range(2000, 2016, 2)), [2016, 2017]),
                                                      (list(range(2001, 2016, 2)), [2016, 2017]),
                                                      (list(range(2008, 2016, 1)), [2016, 2017])]):
-    for base_id in [71, 211, 387]:
+    for base_gauge_id in [71, 211, 387]:
         for architecture in ["ResGCN"]:  # ["GCN", "ResGCN", "GCNII"]
             for edge_orientation in ["bidirectional"]:  # ["downstream", "upstream", "bidirectional"]
                 for adjacency_type in ["isolated", "binary"]:  # ["isolated", "binary", "stream_length", "elevation_difference", "average_slope", "learned"]
+                    hparams["data"]["bause_gauge_id"] = base_gauge_id
                     hparams["training"]["train_years"] = train_years
                     hparams["model"]["architecture"] = architecture
                     hparams["model"]["edge_orientation"] = edge_orientation
