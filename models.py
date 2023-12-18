@@ -3,7 +3,7 @@ import torch
 from abc import ABC, abstractmethod
 from torch.nn import Module, ModuleList, LSTM
 from torch.nn.functional import mse_loss, relu
-from torch_geometric.nn import GCNConv, GCN2Conv, Linear, MessagePassing
+from torch_geometric.nn import GCNConv, GCN2Conv, Linear
 from torch_geometric.utils import add_self_loops
 
 
