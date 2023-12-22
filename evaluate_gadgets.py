@@ -9,9 +9,9 @@ OUT_FILE = f"results/results_gadgets_{datetime.now()}.csv"
 
 results_df = pd.DataFrame()
 for root_gauge_id in [71, 211, 387]:
-    for architecture in ["ResGCN"]:  # ["GCN", "ResGCN", "GCNII"]:
-        for edge_orientation in ["bidirectional"]:  # ["downstream", "upstream", "bidirectional"]:
-            for adjacency_type in ["isolated", "binary"]:  # ["isolated", "binary", "stream_length", "elevation_difference", "average_slope", "learned"]:
+    for architecture in ["ResGCN", "GCNII"]:  # ["GCN", "ResGCN", "GCNII"]:
+        for edge_orientation in ["downstream", "upstream", "bidirectional"]:
+            for adjacency_type in ["isolated", "binary", "stream_length", "elevation_difference", "average_slope", "learned"]:
                 for fold_id in range(3):
                     run_id = f"{root_gauge_id}_{architecture}_{edge_orientation}_{adjacency_type}_{fold_id}"
                     print(run_id)
