@@ -2,7 +2,7 @@ import functions
 
 hparams = {
     "data": {
-        "base_gauge_id": 399,
+        "root_gauge_id": 399,
         "rewire_graph": True,
         "window_size": 24,
         "stride_length": 1,
