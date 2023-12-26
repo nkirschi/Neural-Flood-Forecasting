@@ -24,7 +24,7 @@ hparams = {
         "weight_decay": 5e-4,
         "random_seed": 42,
         "train_years": None,  # set below
-        "holdout_size": 1 / 5,
+        "holdout_size": 1/5,
     }
 }
 
@@ -47,7 +47,6 @@ for fold_id, (train_years, test_years) in enumerate([(list(range(2000, 2016, 2))
                     hparams["model"]["adjacency_type"] = adjacency_type
                     hparams["model"]["num_layers"] = dataset.longest_path()
                     functions.ensure_reproducibility(hparams["training"]["random_seed"])
-                    print(dataset[0].x.shape)
                     print(hparams["model"]["num_layers"], "layers used")
                     model = functions.construct_model(hparams, dataset)
                     history = functions.train(model, dataset, hparams)
