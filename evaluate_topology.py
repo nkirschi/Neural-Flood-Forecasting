@@ -8,9 +8,9 @@ CHECKPOINT_PATH = "/scratch/kirschstein/runs/topology"
 OUT_FILE = f"results/results_topology_{datetime.now()}.csv"
 
 results_df = pd.DataFrame()
-for architecture in ["ResGCN"]:  # ["GCN", "ResGCN", "GCNII"]:
-    for edge_orientation in ["bidirectional"]:  # ["downstream", "upstream", "bidirectional"]:
-        for adjacency_type in ["isolated", "binary"]:  # ["isolated", "binary", "stream_length", "elevation_difference", "average_slope", "learned"]:
+for architecture in ["ResGCN", "GCNII"]:
+    for edge_orientation in ["downstream", "upstream", "bidirectional"]:
+        for adjacency_type in ["isolated", "binary", "stream_length", "elevation_difference", "average_slope", "learned"]:
             for fold in range(3):
                 run_id = f"{architecture}_{edge_orientation}_{adjacency_type}_{fold}"
                 print(run_id)

@@ -8,8 +8,8 @@ CHECKPOINT_PATH = "/scratch/kirschstein/runs/gadgets"
 OUT_FILE = f"results/results_gadgets_{datetime.now()}.csv"
 
 results_df = pd.DataFrame()
-for root_gauge_id in [71, 211, 387]:
-    for architecture in ["ResGCN", "GCNII"]:  # ["GCN", "ResGCN", "GCNII"]:
+for root_gauge_id in [71, 211, 387, 532]:
+    for architecture in ["ResGCN", "GCNII"]:
         for edge_orientation in ["downstream", "upstream", "bidirectional"]:
             for adjacency_type in ["isolated", "binary", "stream_length", "elevation_difference", "average_slope", "learned"]:
                 for fold_id in range(3):
