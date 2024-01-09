@@ -27,6 +27,7 @@ class BaseModel(Module, ABC):
             num_graphs = edge_index.size(1) // len(self.edge_weights)
             edge_weights = self.edge_weights.repeat(num_graphs).to(x.device)
             edge_weights = edge_weights.clamp(min=0)  # relevant when edge weights are learned
+            edge_weights /= edge_weights.sum()
         else:
             edge_weights = torch.zeros(edge_index.size(1)).to(x.device)
 
