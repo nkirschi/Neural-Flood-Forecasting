@@ -100,7 +100,7 @@ def load_model_and_dataset(chkpt, dataset_path):
     return model, dataset
 
 
-def train_step(model, train_loader, optimizer, device, reset_running_loss_after=10):
+def train_step(model, train_loader, criterion, optimizer, device, reset_running_loss_after=10):
     model.train()
     train_loss = 0.0
     running_loss = 0.0
@@ -109,8 +109,8 @@ def train_step(model, train_loader, optimizer, device, reset_running_loss_after=
         for batch in pbar:
             batch = batch.to(device)
             optimizer.zero_grad()
-            out = model(batch.x, batch.edge_index)
-            loss = mse_loss(out, batch.y)
+            pred = model(batch.x, batch.edge_index)
+            loss = criterion(pred, batch)
             loss.backward()
             optimizer.step()
             train_loss += loss.item() * batch.num_graphs / len(train_loader.dataset)
@@ -123,7 +123,7 @@ def train_step(model, train_loader, optimizer, device, reset_running_loss_after=
     return train_loss
 
 
-def val_step(model, val_loader, device, reset_running_loss_after=10):
+def val_step(model, val_loader, criterion, device, reset_running_loss_after=10):
     model.eval()
     val_loss = 0.0
     running_loss = 0.0
@@ -132,8 +132,8 @@ def val_step(model, val_loader, device, reset_running_loss_after=10):
         with tqdm(val_loader, desc="Validating") as pbar:
             for batch in pbar:
                 batch = batch.to(device)
-                out = model(batch.x, batch.edge_index)
-                loss = mse_loss(out, batch.y)
+                pred = model(batch.x, batch.edge_index)
+                loss = criterion(pred, batch)
                 val_loss += loss.item() * batch.num_graphs / len(val_loader.dataset)
                 running_loss += loss.item() / reset_running_loss_after
                 running_counter += 1
@@ -144,6 +144,23 @@ def val_step(model, val_loader, device, reset_running_loss_after=10):
     return val_loss
 
 
+def interestingness_score(batch, dataset):
+    mean = dataset.mean[:, None, 0].repeat(batch.num_graphs, 1)
+    std = dataset.std[:, None, 0].repeat(batch.num_graphs, 1)
+    print(mean.shape, std.shape)
+    unnormalized_discharge = mean + std * batch.x[:, :, 0]
+    assert unnormalized_discharge.min() >= 0.0
+    comparable_discharge = unnormalized_discharge / mean
+
+    mean_central_diff = torch.gradient(comparable_discharge, dim=-1)[0].mean()
+    trapezoid_integral = torch.trapezoid(comparable_discharge, dim=-1)
+
+    score = (mean_central_diff ** 2) * trapezoid_integral
+    assert not trapezoid_integral.isinf().any()
+    assert not trapezoid_integral.isnan().any()
+    return score
+
+
 def train(model, dataset, hparams):
     print(summary(model, depth=2))
 
@@ -152,6 +169,7 @@ def train(model, dataset, hparams):
     train_loader = DataLoader(train_dataset, batch_size=hparams["training"]["batch_size"], shuffle=True)
     val_loader = DataLoader(val_dataset, batch_size=hparams["training"]["batch_size"], shuffle=False)
 
+    criterion = lambda pred, batch: (interestingness_score(batch, train_dataset) * mse_loss(pred, batch.y, reduction="none")).mean()  # mse_loss
     optimizer = torch.optim.Adam(model.parameters(),
                                  lr=hparams["training"]["learning_rate"],
                                  weight_decay=hparams["training"]["weight_decay"])
@@ -163,8 +181,8 @@ def train(model, dataset, hparams):
 
     min_val_loss = float("inf")
     for epoch in range(hparams["training"]["num_epochs"]):
-        train_loss = train_step(model, train_loader, optimizer, device)
-        val_loss = val_step(model, val_loader, device)
+        train_loss = train_step(model, train_loader, criterion, optimizer, device)
+        val_loss = val_step(model, val_loader, criterion, device)
 
         history["train_loss"].append(train_loss)
         history["val_loss"].append(val_loss)
