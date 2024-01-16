@@ -147,7 +147,6 @@ def val_step(model, val_loader, criterion, device, reset_running_loss_after=10):
 def interestingness_score(batch, dataset, device):
     mean = dataset.mean[:, None, 0].repeat(batch.num_graphs, 1).to(device)
     std = dataset.std[:, None, 0].repeat(batch.num_graphs, 1).to(device)
-    print(mean.shape, std.shape)
     unnormalized_discharge = mean + std * batch.x[:, :, 0]
     assert unnormalized_discharge.min() >= 0.0
     comparable_discharge = unnormalized_discharge / mean
