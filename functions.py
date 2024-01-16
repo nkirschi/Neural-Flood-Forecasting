@@ -169,7 +169,7 @@ def train(model, dataset, hparams):
     train_loader = DataLoader(train_dataset, batch_size=hparams["training"]["batch_size"], shuffle=True)
     val_loader = DataLoader(val_dataset, batch_size=hparams["training"]["batch_size"], shuffle=False)
 
-    criterion = lambda pred, batch: (interestingness_score(batch, train_dataset) * mse_loss(pred, batch.y, reduction="none")).mean()  # mse_loss
+    criterion = lambda pred, batch: (interestingness_score(batch, dataset) * mse_loss(pred, batch.y, reduction="none")).mean()  # mse_loss
     optimizer = torch.optim.Adam(model.parameters(),
                                  lr=hparams["training"]["learning_rate"],
                                  weight_decay=hparams["training"]["weight_decay"])
