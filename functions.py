@@ -154,7 +154,7 @@ def interestingness_score(batch, dataset, device):
     mean_central_diff = torch.gradient(comparable_discharge, dim=-1)[0].mean()
     trapezoid_integral = torch.trapezoid(comparable_discharge, dim=-1)
 
-    score = (mean_central_diff ** 2) * trapezoid_integral
+    score = 1e6 * (mean_central_diff ** 2) * trapezoid_integral
     assert not trapezoid_integral.isinf().any()
     assert not trapezoid_integral.isnan().any()
     return score
