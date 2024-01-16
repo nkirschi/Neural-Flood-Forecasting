@@ -144,9 +144,9 @@ def val_step(model, val_loader, criterion, device, reset_running_loss_after=10):
     return val_loss
 
 
-def interestingness_score(batch, dataset):
-    mean = dataset.mean[:, None, 0].repeat(batch.num_graphs, 1)
-    std = dataset.std[:, None, 0].repeat(batch.num_graphs, 1)
+def interestingness_score(batch, dataset, device):
+    mean = dataset.mean[:, None, 0].repeat(batch.num_graphs, 1).to(device)
+    std = dataset.std[:, None, 0].repeat(batch.num_graphs, 1).to(device)
     print(mean.shape, std.shape)
     unnormalized_discharge = mean + std * batch.x[:, :, 0]
     assert unnormalized_discharge.min() >= 0.0
@@ -169,11 +169,11 @@ def train(model, dataset, hparams):
     train_loader = DataLoader(train_dataset, batch_size=hparams["training"]["batch_size"], shuffle=True)
     val_loader = DataLoader(val_dataset, batch_size=hparams["training"]["batch_size"], shuffle=False)
 
-    criterion = lambda pred, batch: (interestingness_score(batch, dataset) * mse_loss(pred, batch.y, reduction="none")).mean()  # mse_loss
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    criterion = lambda pred, batch: (interestingness_score(batch, dataset, device) * mse_loss(pred, batch.y, reduction="none")).mean()  # mse_loss
     optimizer = torch.optim.Adam(model.parameters(),
                                  lr=hparams["training"]["learning_rate"],
                                  weight_decay=hparams["training"]["weight_decay"])
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = model.to(device)
     print("Training on", device)
 
