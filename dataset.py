@@ -124,21 +124,21 @@ class LamaHDataset(Dataset):
     def _collect_upstream(self, gauge_id, adj_df, stats_df):
         print(f"Processing gauge #{gauge_id}", end="\r", flush=True)
         collected_ids = set()
-        is_complete, gauge_stats = self._has_complete_data(gauge_id)
-        if is_complete:
+        is_valid, gauge_stats = self._has_valid_data(gauge_id)
+        if is_valid:
             collected_ids.add(gauge_id)
             stats_df.loc[gauge_id] = gauge_stats
-        if is_complete or self.rewire_graph:
+        if is_valid or self.rewire_graph:
             predecessor_ids = set(adj_df[adj_df["NEXTDOWNID"] == gauge_id]["ID"])
             collected_ids.update(*[self._collect_upstream(pred_id, adj_df, stats_df) for pred_id in predecessor_ids])
         return collected_ids
 
-    def _has_complete_data(self, gauge_id):
+    def _has_valid_data(self, gauge_id):
         q_df = pd.read_csv(f"{self.raw_dir}/{self.raw_file_names[2]}/hourly/ID_{gauge_id}.csv",
                            sep=";", usecols=["YYYY", self.Q_COL])
         met_df = pd.read_csv(f"{self.raw_dir}/{self.raw_file_names[1]}/hourly/ID_{gauge_id}.csv",
                              sep=";", usecols=["YYYY"] + self.MET_COLS)
-        if (q_df[self.Q_COL] >= 0).all():
+        if (q_df[self.Q_COL] >= 0).all() and (q_df[self.Q_COL] <= 1e30).all():
             q_df = q_df[(q_df["YYYY"] >= 2000) & (q_df["YYYY"] <= 2017)]
             met_df = met_df[(met_df["YYYY"] >= 2000) & (met_df["YYYY"] <= 2017)]
             if len(q_df) == (18 * 365 + 5) * 24 and len(met_df) == (18 * 365 + 5) * 24:  # number of hours in 2000-2017
