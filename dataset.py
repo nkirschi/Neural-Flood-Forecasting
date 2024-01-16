@@ -138,7 +138,7 @@ class LamaHDataset(Dataset):
                            sep=";", usecols=["YYYY", self.Q_COL])
         met_df = pd.read_csv(f"{self.raw_dir}/{self.raw_file_names[1]}/hourly/ID_{gauge_id}.csv",
                              sep=";", usecols=["YYYY"] + self.MET_COLS)
-        if (q_df[self.Q_COL] >= 0).all() and (q_df[self.Q_COL] <= 1e30).all():
+        if (q_df[self.Q_COL] > 0).all() and (q_df[self.Q_COL] <= 1e30).all():
             q_df = q_df[(q_df["YYYY"] >= 2000) & (q_df["YYYY"] <= 2017)]
             met_df = met_df[(met_df["YYYY"] >= 2000) & (met_df["YYYY"] <= 2017)]
             if len(q_df) == (18 * 365 + 5) * 24 and len(met_df) == (18 * 365 + 5) * 24:  # number of hours in 2000-2017
