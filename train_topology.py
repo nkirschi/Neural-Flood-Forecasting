@@ -18,9 +18,9 @@ hparams = {
         "adjacency_type": None,  # set below
     },
     "training": {
-        "num_epochs": 1000,
+        "num_epochs": 10,
         "batch_size": 64,
-        "learning_rate": 1e-4, # 1e-3
+        "learning_rate": 1e-3,
         "weight_decay": 0, # 1e-5,
         "random_seed": 42,
         "train_years": None,  # set below
