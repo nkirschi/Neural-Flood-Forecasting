@@ -8,7 +8,7 @@ import torch.nn as nn
 from dataset import LamaHDataset
 from models import MLP, GCN, ResGCN, GCNII
 from torch.nn.functional import mse_loss
-from torch.utils.data import random_split
+from torch.utils.data import random_split, Batch
 from torch_geometric.loader import DataLoader
 from torch_geometric.utils import get_laplacian, to_undirected, to_torch_coo_tensor
 
@@ -223,17 +223,37 @@ def evaluate_mse_nse(model, dataset):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = model.to(device)
     model.eval()
-    node_mses = torch.zeros(dataset[0].num_nodes, 1)
+
+    mean = dataset.mean[:, [0]].to(device)
+    std_squared = dataset.std[:, [0]].square().to(device)
+
     with torch.no_grad():
+        model_error = torch.zeros(dataset[0].num_nodes, 1).to(device)
+        mean_error = torch.zeros(dataset[0].num_nodes, 1).to(device)
         for data in tqdm(dataset, desc="Testing"):
             data = data.to(device)
             pred = model(data.x, data.edge_index)
-            node_mses += mse_loss(pred, data.y, reduction="none").cpu() / len(dataset)
-    sigma_squared = dataset.std[:, [0]].square()
-    if dataset.normalized:
-        node_mses *= sigma_squared
-    nose_nses = 1 - node_mses / sigma_squared
-    return node_mses, nose_nses
+            model_mse = mse_loss(pred, data.y, reduction="none")
+            mean_mse = mse_loss(mean, data.y, reduction="none")
+            if dataset.normalized:
+                model_mse *= std_squared
+                mean_mse *= std_squared
+            score = interestingness_score(Batch.from_data_list([data]), dataset, device)
+            model_error += score * model_mse
+            mean_error += score * mean_mse
+
+    nose_nses = 1 - model_error / mean_error
+    # node_mses = torch.zeros(dataset[0].num_nodes, 1)
+    # with torch.no_grad():
+    #     for data in tqdm(dataset, desc="Testing"):
+    #         data = data.to(device)
+    #         pred = model(data.x, data.edge_index)
+    #         node_mses += mse_loss(pred, data.y, reduction="none").cpu() / len(dataset)
+    # sigma_squared = dataset.std[:, [0]].square()
+    # if dataset.normalized:
+    #     node_mses *= sigma_squared
+    # nose_nses = 1 - node_mses / sigma_squared
+    return nose_nses
 
 
 def calculate_predictions_and_deviations_on_gauge(model, dataset, gauge_index):
