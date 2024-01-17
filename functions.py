@@ -8,7 +8,8 @@ import torch.nn as nn
 from dataset import LamaHDataset
 from models import MLP, GCN, ResGCN, GCNII
 from torch.nn.functional import mse_loss
-from torch.utils.data import random_split, Batch
+from torch.utils.data import random_split
+from torch_geometric.data import Batch
 from torch_geometric.loader import DataLoader
 from torch_geometric.utils import get_laplacian, to_undirected, to_torch_coo_tensor
 
