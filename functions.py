@@ -160,6 +160,13 @@ def interestingness_score(batch, dataset, device):
     return score
 
 
+def interestingness_score_normalization_const(loader, device):
+    total_score = 0.0
+    for batch in tqdm(loader, desc="Summing all scores"):
+        total_score += interestingness_score(batch, loader.dataset, device).item()
+    return total_score
+
+
 def train(model, dataset, hparams):
     print(summary(model, depth=2))
 
@@ -169,7 +176,7 @@ def train(model, dataset, hparams):
     val_loader = DataLoader(val_dataset, batch_size=hparams["training"]["batch_size"], shuffle=False)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    criterion = mse_loss # lambda pred, batch: (interestingness_score(batch, dataset, device) * mse_loss(pred, batch.y, reduction="none")).mean()  # mse_loss
+    criterion = lambda pred, batch: mse_loss(pred, batch.y) # (interestingness_score(batch, dataset, device) * mse_loss(pred, batch.y, reduction="none")).mean()  # mse_loss(pred, batch.y)
     optimizer = torch.optim.Adam(model.parameters(),
                                  lr=hparams["training"]["learning_rate"],
                                  weight_decay=hparams["training"]["weight_decay"])
