@@ -240,6 +240,8 @@ def evaluate_mse_nse(model, dataset):
                 model_mse *= std_squared
                 mean_mse *= std_squared
             score = interestingness_score(Batch.from_data_list([data]), dataset, device)
+            print(score.shape)
+            print(model_mse.shape)
             model_error += score * model_mse
             mean_error += score * mean_mse
 
