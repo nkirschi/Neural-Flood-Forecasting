@@ -254,7 +254,7 @@ def evaluate_mse_nse(model, dataset):
     # if dataset.normalized:
     #     node_mses *= sigma_squared
     # nose_nses = 1 - node_mses / sigma_squared
-    return nose_nses
+    return nose_nses.cpu()
 
 
 def calculate_predictions_and_deviations_on_gauge(model, dataset, gauge_index):
