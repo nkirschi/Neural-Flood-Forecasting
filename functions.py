@@ -158,7 +158,7 @@ def interestingness_score(batch, dataset, device):
     score = 1e3 * (mean_central_diff ** 2) * trapezoid_integral
     assert not trapezoid_integral.isinf().any()
     assert not trapezoid_integral.isnan().any()
-    return score
+    return score.unsqueeze(-1)
 
 
 def interestingness_score_normalization_const(loader, device):
