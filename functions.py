@@ -154,7 +154,7 @@ def interestingness_score(batch, dataset, device):
     mean_central_diff = torch.gradient(comparable_discharge, dim=-1)[0].mean()
     trapezoid_integral = torch.trapezoid(comparable_discharge, dim=-1)
 
-    score = 1e6 * (mean_central_diff ** 2) * trapezoid_integral
+    score = 1e3 * (mean_central_diff ** 2) * trapezoid_integral
     assert not trapezoid_integral.isinf().any()
     assert not trapezoid_integral.isnan().any()
     return score
@@ -169,7 +169,7 @@ def train(model, dataset, hparams):
     val_loader = DataLoader(val_dataset, batch_size=hparams["training"]["batch_size"], shuffle=False)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    criterion = lambda pred, batch: (interestingness_score(batch, dataset, device) * mse_loss(pred, batch.y, reduction="none")).mean()  # mse_loss
+    criterion = lambda pred, batch: mse_loss # (interestingness_score(batch, dataset, device) * mse_loss(pred, batch.y, reduction="none")).mean()  # mse_loss
     optimizer = torch.optim.Adam(model.parameters(),
                                  lr=hparams["training"]["learning_rate"],
                                  weight_decay=hparams["training"]["weight_decay"])
