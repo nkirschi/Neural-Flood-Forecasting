@@ -20,8 +20,8 @@ hparams = {
     "training": {
         "num_epochs": 100,
         "batch_size": 64,
-        "learning_rate": 5e-4,
-        "weight_decay": 1e-4,
+        "learning_rate": 1e-4,
+        "weight_decay": 1e-5,
         "random_seed": 42,
         "train_years": None,  # set below
         "holdout_size": 1/5,

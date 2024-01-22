@@ -220,7 +220,7 @@ def load_checkpoint(chkpt_path):
     return torch.load(chkpt_path)
 
 
-def evaluate_mse_nse(model, dataset):
+def evaluate_nse(model, dataset):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = model.to(device)
     model.eval()
@@ -243,18 +243,8 @@ def evaluate_mse_nse(model, dataset):
             model_error += score * model_mse
             mean_error += score * mean_mse
 
-    nose_nses = 1 - model_error / mean_error
-    # node_mses = torch.zeros(dataset[0].num_nodes, 1)
-    # with torch.no_grad():
-    #     for data in tqdm(dataset, desc="Testing"):
-    #         data = data.to(device)
-    #         pred = model(data.x, data.edge_index)
-    #         node_mses += mse_loss(pred, data.y, reduction="none").cpu() / len(dataset)
-    # sigma_squared = dataset.std[:, [0]].square()
-    # if dataset.normalized:
-    #     node_mses *= sigma_squared
-    # nose_nses = 1 - node_mses / sigma_squared
-    return nose_nses.cpu()
+    nse = 1 - model_error / mean_error
+    return nse.cpu()
 
 
 def calculate_predictions_and_deviations_on_gauge(model, dataset, gauge_index):
