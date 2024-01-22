@@ -17,5 +17,5 @@ for architecture in ["GCNII"]:
                 chkpt = functions.load_checkpoint(f"{CHECKPOINT_PATH}/{run_id}.run")
                 model, dataset = functions.load_model_and_dataset(chkpt, DATASET_PATH)
                 test_nse = functions.evaluate_mse_nse(model, dataset)
-                results_df.loc[run_id] = test_nse.squeeze().numpy()
+                results_df.loc[run_id, range(len(test_nse))] = test_nse.squeeze().numpy()
 results_df.to_csv(OUT_FILE)
