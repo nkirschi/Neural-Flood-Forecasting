@@ -103,7 +103,4 @@ class ResGAT(BaseModel):
     def apply_layer(self, layer, x, x_0, edge_index, edge_weights):
         if edge_weights.dim() == 1:
             edge_index = edge_index[:, edge_weights != 0]
-            print("is 1")
-        else:
-            print("not 1")
         return x + relu(layer(x, edge_index, edge_weights))
