@@ -35,7 +35,7 @@ class BaseModel(Module, ABC):
                 edge_index = edge_index[[1, 0]].to(x.device)
             elif self.edge_orientation == "bidirectional":
                 edge_index = torch.cat([edge_index, edge_index[[1, 0]]], dim=1).to(x.device)
-                edge_weights = edge_weights.repeat(2).to(x.device)
+                edge_weights = torch.cat(2 * [edge_weights], dim=0).to(x.device)
             elif self.edge_orientation != "downstream":
                 raise ValueError("unknown edge direction", self.edge_orientation)
         if self.edge_weights is not None:
