@@ -3,7 +3,7 @@ import torch
 from abc import ABC, abstractmethod
 from torch.nn import Module, ModuleList, LSTM
 from torch.nn.functional import mse_loss, relu
-from torch_geometric.nn import GCNConv, GCN2Conv, Linear
+from torch_geometric.nn import GATConv, GCNConv, GCN2Conv, Linear
 from torch_geometric.utils import add_self_loops
 
 
@@ -67,7 +67,7 @@ class MLP(BaseModel):
 
     def apply_layer(self, layer, x, x_0, edge_index, edge_weights):
         return relu(layer(x))
-        
+
 
 class GCN(BaseModel):
     def __init__(self, in_channels, hidden_channels, num_hidden, param_sharing, edge_orientation, edge_weights):
@@ -94,3 +94,11 @@ class GCNII(BaseModel):
     def apply_layer(self, layer, x, x_0, edge_index, edge_weights):
         return relu(layer(x, x_0, edge_index, edge_weights))
 
+
+class ResGAT(BaseModel):
+    def __init__(self, in_channels, hidden_channels, num_hidden, param_sharing, edge_orientation, edge_weights):
+        layer_gen = lambda: GATConv(hidden_channels, hidden_channels, add_self_loops=False)
+        super().__init__(in_channels, hidden_channels, num_hidden, param_sharing, layer_gen, edge_orientation, edge_weights)
+
+    def apply_layer(self, layer, x, x_0, edge_index, edge_weights):
+        return x + relu(layer(x, edge_index, edge_weights))

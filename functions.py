@@ -6,7 +6,7 @@ import torch
 import torch.nn as nn
 
 from dataset import LamaHDataset
-from models import MLP, GCN, ResGCN, GCNII
+from models import MLP, GCN, ResGCN, GCNII, ResGAT
 from torch.nn.functional import mse_loss
 from torch.utils.data import random_split
 from torch_geometric.data import Batch
@@ -39,6 +39,8 @@ def get_edge_weights(adjacency_type, edge_attr):
         return edge_attr[:, 2]
     elif adjacency_type == "learned":
         return nn.Parameter(torch.nn.init.uniform_(torch.empty(edge_attr.size(0)), 0.9, 1.1))
+    elif adjacency_type == "all":
+        return edge_attr[:, :]
     else:
         raise ValueError("invalid adjacency type", adjacency_type)
 
@@ -73,6 +75,13 @@ def construct_model(hparams, dataset):
                      param_sharing=hparams["model"]["param_sharing"],
                      edge_orientation=hparams["model"]["edge_orientation"],
                      edge_weights=edge_weights)
+    elif model_arch == "ResGAT":
+        return ResGAT(in_channels=hparams["data"]["window_size"] * (1 + len(dataset.MET_COLS)),
+                      hidden_channels=hparams["model"]["hidden_channels"],
+                      num_hidden=hparams["model"]["num_layers"],
+                      param_sharing=hparams["model"]["param_sharing"],
+                      edge_orientation=hparams["model"]["edge_orientation"],
+                      edge_weights=edge_weights)
     raise ValueError("unknown model architecture", model_arch)
 
 
