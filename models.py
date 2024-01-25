@@ -25,7 +25,7 @@ class BaseModel(Module, ABC):
         x = x.flatten(1)
         if self.edge_weights is not None:
             num_graphs = edge_index.size(1) // len(self.edge_weights)
-            edge_weights = self.edge_weights.repeat(num_graphs).to(x.device)
+            edge_weights = torch.cat(num_graphs * [self.edge_weights], dim=0).to(x.device)
             edge_weights = edge_weights.abs()  # relevant when edge weights are learned
         else:
             edge_weights = torch.zeros(edge_index.size(1)).to(x.device)
