@@ -5,12 +5,12 @@ from datetime import datetime
 
 DATASET_PATH = "/scratch/kirschstein/LamaH-CE"
 CHECKPOINT_PATH = "/scratch/kirschstein/runs/topology"
-OUT_FILE = f"{CHECKPOINT_PATH}/results.csv"
+OUT_FILE = f"{CHECKPOINT_PATH}/results_resgcn.csv"
 
 results_df = pd.DataFrame()
-for architecture in ["ResGCN", "GCNII", "ResGAT"]:
+for architecture in ["ResGCN"]:
     for edge_orientation in ["downstream", "upstream", "bidirectional"]:
-        for adjacency_type in ["isolated", "binary", "stream_length", "elevation_difference", "average_slope", "all" if architecture == "ResGAT" else "learned"]:
+        for adjacency_type in ["isolated", "binary", "stream_length", "elevation_difference", "average_slope", "learned"]:
             for fold in range(3):
                 run_id = f"{architecture}_{edge_orientation}_{adjacency_type}_{fold}"
                 print(run_id)
