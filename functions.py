@@ -226,7 +226,7 @@ def save_checkpoint(history, hparams, filename, directory="./runs"):
 
 
 def load_checkpoint(chkpt_path):
-    return torch.load(chkpt_path)
+    return torch.load(chkpt_path, map_location=torch.device("cpu"))
 
 
 def evaluate_nse(model, dataset):
