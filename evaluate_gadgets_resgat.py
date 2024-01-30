@@ -5,11 +5,11 @@ from datetime import datetime
 
 DATASET_PATH = "/scratch/kirschstein/LamaH-CE"
 CHECKPOINT_PATH = "/scratch/kirschstein/runs/gadgets"
-OUT_FILE = f"{CHECKPOINT_PATH}/results.csv"
+OUT_FILE = f"{CHECKPOINT_PATH}/results_resgat.csv"
 
 results_df = pd.DataFrame()
 for root_gauge_id in [71, 211, 387, 532]:
-    for architecture in ["ResGCN", "GCNII", "ResGAT"]:
+    for architecture in ["ResGAT"]:
         for edge_orientation in ["downstream", "upstream", "bidirectional"]:
             for adjacency_type in ["isolated", "binary", "stream_length", "elevation_difference", "average_slope", "all" if architecture == "ResGAT" else "learned"]:
                 for fold_id in range(3):

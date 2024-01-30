@@ -36,7 +36,7 @@ for fold_id, (train_years, test_years) in enumerate([(list(range(2000, 2016, 2))
                                                      (list(range(2008, 2016, 1)), [2016, 2017])]):
     for architecture in ["ResGCN", "GCNII", "ResGAT"]:
         for edge_orientation in ["downstream", "upstream", "bidirectional"]:
-            for adjacency_type in ["isolated", "binary", "stream_length", "elevation_difference", "average_slope", "learned"]:
+            for adjacency_type in ["isolated", "binary", "stream_length", "elevation_difference", "average_slope", "all" if architecture == "ResGAT" else "learned"]:
                 hparams["training"]["train_years"] = train_years
                 dataset = functions.load_dataset(DATASET_PATH, hparams, split="train")
 
