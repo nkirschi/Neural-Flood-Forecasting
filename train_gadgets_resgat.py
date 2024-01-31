@@ -37,7 +37,7 @@ for fold_id, (train_years, test_years) in enumerate([(list(range(2000, 2016, 2))
     for root_gauge_id in [71, 211, 387, 532]:
         for architecture in ["ResGAT"]:
             for edge_orientation in ["downstream", "upstream", "bidirectional"]:
-                for adjacency_type in ["all"]:
+                for adjacency_type in ["isolated", "binary", "stream_length", "elevation_difference", "average_slope", "all"]:
                     hparams["data"]["root_gauge_id"] = root_gauge_id
                     hparams["training"]["train_years"] = train_years
                     dataset = functions.load_dataset(DATASET_PATH, hparams, split="train")
