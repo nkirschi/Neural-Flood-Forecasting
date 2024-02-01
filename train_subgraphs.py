@@ -29,7 +29,7 @@ hparams = {
 }
 
 DATASET_PATH = "/scratch/kirschstein/LamaH-CE"
-CHECKPOINT_PATH = "/scratch/kirschstein/runs/gadgets"
+CHECKPOINT_PATH = "/scratch/kirschstein/runs/subgraphs"
 
 for fold_id, (train_years, test_years) in enumerate([(list(range(2000, 2016, 2)), [2016, 2017]),
                                                      (list(range(2001, 2016, 2)), [2016, 2017]),

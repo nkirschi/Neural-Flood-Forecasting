@@ -4,7 +4,7 @@ import pandas as pd
 from datetime import datetime
 
 DATASET_PATH = "/scratch/kirschstein/LamaH-CE"
-CHECKPOINT_PATH = "/scratch/kirschstein/runs/gadgets"
+CHECKPOINT_PATH = "/scratch/kirschstein/runs/subgraphs"
 OUT_FILE = f"{CHECKPOINT_PATH}/results.csv"
 
 results_df = pd.DataFrame()
