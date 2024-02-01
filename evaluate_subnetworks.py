@@ -3,9 +3,9 @@ import pandas as pd
 
 from datetime import datetime
 
-DATASET_PATH = "/scratch/kirschstein/LamaH-CE"
-CHECKPOINT_PATH = "/scratch/kirschstein/runs/subgraphs"
-OUT_FILE = f"{CHECKPOINT_PATH}/results.csv"
+DATASET_PATH = "/path/to/LamaH-CE"
+CHECKPOINT_PATH = "/path/to/checkpoint"
+OUT_FILE = "/path/to/results.csv"
 
 results_df = pd.DataFrame()
 for root_gauge_id in [71, 211, 387, 532]:
