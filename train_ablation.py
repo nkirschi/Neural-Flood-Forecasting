@@ -36,7 +36,7 @@ for fold_id, (train_years, test_years) in enumerate([(list(range(2000, 2016, 2))
                                                      (list(range(2008, 2016, 1)), [2016, 2017])]):
     for root_gauge_id in [71, 211, 387, 532]:
         for window_size in [72, 60, 48, 36, 24, 12]:
-            for lead_time in [1, 2, 3, 6, 9, 12]:
+            for lead_time in [12, 9, 6, 3, 2, 1]:
                 hparams["data"]["window_size"] = window_size
                 hparams["data"]["lead_time"] = lead_time
                 hparams["data"]["root_gauge_id"] = root_gauge_id
