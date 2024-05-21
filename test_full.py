@@ -1,8 +1,6 @@
 import functions
 import pandas as pd
 
-from datetime import datetime
-
 DATASET_PATH = "/path/to/LamaH-CE"
 CHECKPOINT_PATH = "/path/to/checkpoint"
 OUT_FILE = "/path/to/results.csv"

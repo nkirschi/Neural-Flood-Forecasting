@@ -1,8 +1,6 @@
 import functions
 import pandas as pd
 
-from datetime import datetime
-
 DATASET_PATH = "/scratch/kirschstein/LamaH-CE"
 CHECKPOINT_PATH = "/scratch/kirschstein/runs/ablation"
 OUT_FILE_UNWEIGHTED = "~/floodgnn/results/results_ablation_unweighted.csv"
