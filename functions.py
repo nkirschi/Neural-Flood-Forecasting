@@ -238,8 +238,10 @@ def evaluate_nse(model, dataset):
     std_squared = dataset.std[:, [0]].square().to(device)
 
     with torch.no_grad():
-        model_error = torch.zeros(dataset[0].num_nodes, 1).to(device)
-        mean_error = torch.zeros(dataset[0].num_nodes, 1).to(device)
+        unweighted_model_error = torch.zeros(dataset[0].num_nodes, 1).to(device)
+        unweighted_mean_error = torch.zeros(dataset[0].num_nodes, 1).to(device)
+        weighted_model_error = torch.zeros(dataset[0].num_nodes, 1).to(device)
+        weighted_mean_error = torch.zeros(dataset[0].num_nodes, 1).to(device)
         for data in tqdm(dataset, desc="Testing"):
             data = data.to(device)
             pred = model(data.x, data.edge_index)
@@ -249,11 +251,14 @@ def evaluate_nse(model, dataset):
                 model_mse *= std_squared
                 mean_mse *= std_squared
             score = interestingness_score(Batch.from_data_list([data]), dataset, device)
-            model_error += score * model_mse
-            mean_error += score * mean_mse
+            unweighted_model_error += model_mse
+            unweighted_mean_error += mean_mse
+            weighted_model_error += score * model_mse
+            weighted_mean_error += score * mean_mse
 
-    nse = 1 - model_error / mean_error
-    return nse.cpu()
+    unweighted_nse = 1 - unweighted_model_error / unweighted_mean_error
+    weighted_nse = 1 - weighted_model_error / weighted_mean_error
+    return unweighted_nse.cpu(), weighted_nse.cpu()
 
 
 def calculate_predictions_and_deviations_on_gauge(model, dataset, gauge_index):
