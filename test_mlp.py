@@ -1,9 +1,9 @@
 import functions
 import pandas as pd
 
-DATASET_PATH = "/path/to/LamaH-CE"
-CHECKPOINT_PATH = "/path/to/checkpoint"
-OUT_FILE = "/path/to/results.csv"
+DATASET_PATH = "/scratch/kirschstein/LamaH-CE"
+CHECKPOINT_PATH = "/scratch/kirschstein/runs/mlp2"
+OUT_FILE = "results/results_mlp2.csv"
 
 results_df = pd.DataFrame()
 for fold in range(3):
