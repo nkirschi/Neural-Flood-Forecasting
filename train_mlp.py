@@ -11,8 +11,8 @@ hparams = {
     },
     "model": {
         "architecture": "MLP",
-        "num_layers": None,  # set below
-        "hidden_channels": 128,
+        "num_layers": 2,
+        "hidden_channels": 512,
         "param_sharing": False,
         "edge_orientation": "bidirectional",
         "adjacency_type": "isolated"
@@ -28,15 +28,14 @@ hparams = {
     }
 }
 
-DATASET_PATH = "/path/to/LamaH-CE"
-CHECKPOINT_PATH = "/path/to/checkpoint"
+DATASET_PATH = "/scratch/kirschstein/LamaH-CE"
+CHECKPOINT_PATH = "/scratch/kirschstein/runs/mlp2"
 
 for fold_id, (train_years, test_years) in enumerate([(list(range(2000, 2016, 2)), [2016, 2017]),
                                                      (list(range(2001, 2016, 2)), [2016, 2017]),
                                                      (list(range(2008, 2016, 1)), [2016, 2017])]):
     hparams["training"]["train_years"] = train_years
     dataset = functions.load_dataset(DATASET_PATH, hparams, split="train")
-    hparams["model"]["num_layers"] = dataset.longest_path()
 
     functions.ensure_reproducibility(hparams["training"]["random_seed"])
 
